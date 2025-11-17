@@ -1,6 +1,6 @@
 {
   "name": "typesense-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A modern, interactive UI for managing and exploring Typesense collections with real-time search, filtering, and beautiful dark mode",
   "type": "module",
   "main": "dist/index.html",
