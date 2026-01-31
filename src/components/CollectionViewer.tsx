@@ -11,31 +11,29 @@ import {
   Filter,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
-import { typesenseService } from "../services/typesense";
-import type {
-  CollectionSchema,
-  Document,
-  SearchResponse,
-  FilterValue,
-} from "../types";
+import type { Document } from "../types";
+import { useCollectionDocuments } from "../hooks/useCollectionDocuments";
 
 export function CollectionViewer() {
   const { selectedCollection } = useApp();
-  const [collection, setCollection] = useState<CollectionSchema | null>(null);
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(
-    null
-  );
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Search and filter state
-  const [searchQuery, setSearchQuery] = useState("*");
-  const [filters, setFilters] = useState<FilterValue>({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage] = useState(25);
-  const [sortBy, setSortBy] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const {
+    collection,
+    documents,
+    searchResponse,
+    isLoading,
+    error,
+    searchQuery,
+    setSearchQuery,
+    filters,
+    handleFilterChange,
+    clearFilter,
+    currentPage,
+    setCurrentPage,
+    perPage,
+    sortBy,
+    toggleSort,
+    sortOrder,
+  } = useCollectionDocuments(selectedCollection);
 
   // UI state
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
@@ -46,21 +44,6 @@ export function CollectionViewer() {
   const [showFilters, setShowFilters] = useState(true);
 
   useEffect(() => {
-    if (selectedCollection) {
-      loadCollection();
-    } else {
-      setCollection(null);
-      setDocuments([]);
-    }
-  }, [selectedCollection]);
-
-  useEffect(() => {
-    if (collection) {
-      performSearch();
-    }
-  }, [collection, searchQuery, filters, currentPage, sortBy, sortOrder]);
-
-  useEffect(() => {
     if (collection) {
       const defaultColumns = new Set(
         collection.fields.slice(0, 6).map((f) => f.name)
@@ -68,124 +51,6 @@ export function CollectionViewer() {
       setVisibleColumns(defaultColumns);
     }
   }, [collection]);
-
-  const loadCollection = async () => {
-    if (!selectedCollection) return;
-
-    setIsLoading(true);
-    setError(null);
-    try {
-      const col = await typesenseService.getCollection(selectedCollection);
-      setCollection(col);
-      setFilters({});
-      setSearchQuery("*");
-      setCurrentPage(1);
-      setSortBy(col.default_sorting_field || "");
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load collection"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const performSearch = async () => {
-    if (!collection) return;
-
-    setIsLoading(true);
-    setError(null);
-    try {
-      const queryBy =
-        collection.fields
-          .filter((f) => ["string", "string[]"].includes(f.type))
-          .map((f) => f.name)
-          .join(",") ||
-        collection.fields[0]?.name ||
-        "*";
-
-      const filterBy = buildFilterString();
-      const sort = sortBy ? `${sortBy}:${sortOrder}` : undefined;
-
-      const response = await typesenseService.searchDocuments(collection.name, {
-        q: searchQuery || "*",
-        query_by: queryBy,
-        filter_by: filterBy,
-        sort_by: sort,
-        page: currentPage,
-        per_page: perPage,
-      });
-
-      setSearchResponse(response);
-      setDocuments(response.hits.map((hit) => hit.document));
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to search documents"
-      );
-      setDocuments([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const buildFilterString = (): string | undefined => {
-    const filterParts: string[] = [];
-
-    Object.entries(filters).forEach(([field, value]) => {
-      if (value === null || value === undefined || value === "") return;
-
-      const fieldSchema = collection?.fields.find((f) => f.name === field);
-      if (!fieldSchema) return;
-
-      if (fieldSchema.type === "string" || fieldSchema.type === "string[]") {
-        filterParts.push(`${field}:=${value}`);
-      } else if (
-        fieldSchema.type.includes("int") ||
-        fieldSchema.type.includes("float")
-      ) {
-        if (typeof value === "object" && value !== null) {
-          const { min, max } = value;
-          if (min !== undefined && max !== undefined) {
-            filterParts.push(`${field}:[${min}..${max}]`);
-          } else if (min !== undefined) {
-            filterParts.push(`${field}:>=${min}`);
-          } else if (max !== undefined) {
-            filterParts.push(`${field}:<=${max}`);
-          }
-        } else {
-          filterParts.push(`${field}:=${value}`);
-        }
-      } else if (fieldSchema.type === "bool") {
-        filterParts.push(`${field}:=${value}`);
-      }
-    });
-
-    return filterParts.length > 0 ? filterParts.join(" && ") : undefined;
-  };
-
-  const handleFilterChange = (field: string, value: any) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
-    setCurrentPage(1);
-  };
-
-  const clearFilter = (field: string) => {
-    setFilters((prev) => {
-      const newFilters = { ...prev };
-      delete newFilters[field];
-      return newFilters;
-    });
-    setCurrentPage(1);
-  };
-
-  const toggleSort = (field: string) => {
-    if (sortBy === field) {
-      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-    } else {
-      setSortBy(field);
-      setSortOrder("desc");
-    }
-    setCurrentPage(1);
-  };
 
   const toggleColumn = (columnName: string) => {
     setVisibleColumns((prev) => {
