@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   Search,
   ChevronLeft,
@@ -161,10 +162,10 @@ export function CollectionViewer() {
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-gray-50/30 via-blue-50/20 to-purple-50/20 dark:from-slate-950/30 dark:via-gray-800/20 dark:to-slate-950/30">
       {/* Header */}
-      <div className="p-5 border-b border-gray-200/50 dark:border-slate-700/50 space-y-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="animate-fade-in">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+      <div className="p-3 sm:p-5 border-b border-gray-200/50 dark:border-slate-700/50 space-y-3 sm:space-y-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <div className="animate-fade-in min-w-0">
+            <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent truncate">
               {collection?.name}
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -185,35 +186,35 @@ export function CollectionViewer() {
             </p>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center flex-wrap gap-2">
             {/* New Document Button */}
             <button
               onClick={handleCreateDocument}
               className="px-3 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all duration-300 flex items-center space-x-1.5"
             >
               <Plus className="w-4 h-4" />
-              <span>New Document</span>
+              <span className="hidden sm:inline">New Document</span>
             </button>
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`btn-secondary flex items-center space-x-2 transition-all duration-300 ${
+              className={`btn-secondary flex items-center space-x-1 sm:space-x-2 transition-all duration-300 ${
                 showFilters
                   ? "bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 ring-2 ring-blue-400 dark:ring-purple-500"
                   : ""
               }`}
             >
               <Filter className="w-4 h-4" />
-              <span>Filters</span>
+              <span className="hidden sm:inline">Filters</span>
             </button>
 
             <div className="relative">
               <button
                 onClick={() => setShowColumnPicker(!showColumnPicker)}
-                className="btn-secondary flex items-center space-x-2"
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
               >
                 <Columns className="w-4 h-4" />
-                <span>Columns</span>
+                <span className="hidden sm:inline">Columns</span>
               </button>
 
               {showColumnPicker && collection && (
@@ -471,35 +472,33 @@ export function CollectionViewer() {
 
       {/* Pagination */}
       {searchResponse && totalPages > 0 && (
-        <div className="p-5 border-t border-gray-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700 dark:text-gray-200 font-semibold">
-              Showing{" "}
+        <div className="p-3 sm:p-5 border-t border-gray-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div className="text-xs sm:text-sm text-gray-700 dark:text-gray-200 font-semibold">
               <span className="font-bold text-blue-600 dark:text-blue-400">
                 {(currentPage - 1) * perPage + 1}
-              </span>{" "}
-              to{" "}
+              </span>
+              –
               <span className="font-bold text-blue-600 dark:text-blue-400">
                 {Math.min(currentPage * perPage, searchResponse.found)}
-              </span>{" "}
-              of{" "}
+              </span>
+              {" of "}
               <span className="font-bold text-purple-600 dark:text-purple-400">
                 {searchResponse.found.toLocaleString()}
-              </span>{" "}
-              results
+              </span>
             </div>
 
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm hover:shadow-md border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
+                className="p-2 sm:p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm hover:shadow-md border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-200" />
               </button>
 
-              <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent px-3">
-                Page {currentPage} of {totalPages}
+              <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent px-2 sm:px-3 whitespace-nowrap">
+                {currentPage} / {totalPages}
               </span>
 
               <button
@@ -507,9 +506,9 @@ export function CollectionViewer() {
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage >= totalPages}
-                className="p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm hover:shadow-md border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
+                className="p-2 sm:p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm hover:shadow-md border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
               >
-                <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-200" />
               </button>
             </div>
           </div>
@@ -517,34 +516,36 @@ export function CollectionViewer() {
       )}
 
       {/* JSON Viewer Modal */}
-      {selectedDocument && (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in"
-          onClick={() => setSelectedDocument(null)}
-        >
+      {selectedDocument &&
+        createPortal(
           <div
-            className="bg-white dark:bg-slate-900 rounded-lg shadow-xl max-w-3xl w-full max-h-[80vh] overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-[9999] animate-fade-in"
+            onClick={() => setSelectedDocument(null)}
           >
-            <div className="p-5 border-b border-gray-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-t-2xl">
-              <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Document JSON
-              </h3>
-              <button
-                onClick={() => setSelectedDocument(null)}
-                className="p-2 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/30 dark:hover:to-red-900/20 transition-all duration-300 group"
-              >
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400" />
-              </button>
+            <div
+              className="bg-white dark:bg-slate-900 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] sm:max-h-[80vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 sm:p-5 border-b border-gray-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-t-2xl">
+                <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Document JSON
+                </h3>
+                <button
+                  onClick={() => setSelectedDocument(null)}
+                  className="p-2 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/30 dark:hover:to-red-900/20 transition-all duration-300 group"
+                >
+                  <X className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400" />
+                </button>
+              </div>
+              <div className="p-4 sm:p-6 overflow-auto max-h-[calc(90vh-70px)] sm:max-h-[calc(80vh-80px)]">
+                <pre className="text-xs sm:text-sm text-gray-900 dark:text-gray-50 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 p-4 sm:p-6 rounded-xl overflow-x-auto border border-gray-200/50 dark:border-slate-700/50 shadow-inner font-mono leading-relaxed">
+                  {JSON.stringify(selectedDocument, null, 2)}
+                </pre>
+              </div>
             </div>
-            <div className="p-6 overflow-auto max-h-[calc(80vh-80px)]">
-              <pre className="text-sm text-gray-900 dark:text-gray-50 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 p-6 rounded-xl overflow-x-auto border border-gray-200/50 dark:border-slate-700/50 shadow-inner font-mono leading-relaxed">
-                {JSON.stringify(selectedDocument, null, 2)}
-              </pre>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
 
       {/* Document Editor Modal */}
       {collection && (

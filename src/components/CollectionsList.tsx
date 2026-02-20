@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { Database, Trash2, Eye, Search, X } from "lucide-react";
+import { Database, Trash2, Eye, Search, X, Plus } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { typesenseService } from "../services/typesense";
+import { CollectionCreator } from "./CollectionCreator";
+import { useToast } from "../hooks/useToast";
 
-export function CollectionsList() {
+interface CollectionsListProps {
+  onCollectionSelect?: () => void;
+}
+
+export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
   const {
     collections,
     selectedCollection,
@@ -17,6 +23,8 @@ export function CollectionsList() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
     null
   );
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const { addToast } = useToast();
 
   const filteredCollections = collections.filter((col) =>
     col.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -32,7 +40,8 @@ export function CollectionsList() {
       }
     } catch (error) {
       console.error("Failed to delete collection:", error);
-      alert(
+      addToast(
+        "error",
         "Failed to delete collection: " +
           (error instanceof Error ? error.message : "Unknown error")
       );
@@ -42,12 +51,25 @@ export function CollectionsList() {
     }
   };
 
+  const handleCollectionCreated = async () => {
+    await refreshCollections();
+  };
+
   return (
     <div className="h-full flex flex-col bg-gradient-to-b from-white/50 to-gray-50/50 dark:from-slate-900/50 dark:to-slate-950/50">
       <div className="p-5 border-b border-gray-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md">
-        <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3 tracking-tight">
-          Collections ({collections.length})
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
+            Collections ({collections.length})
+          </h2>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="p-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+            title="Create new collection"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
 
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
@@ -95,7 +117,10 @@ export function CollectionsList() {
               <div className="flex items-start justify-between mb-3">
                 <div
                   className="flex-1"
-                  onClick={() => setSelectedCollection(collection.name)}
+                  onClick={() => {
+                    setSelectedCollection(collection.name);
+                    onCollectionSelect?.();
+                  }}
                 >
                   <div className="flex items-center space-x-2 mb-2">
                     <div
@@ -144,7 +169,10 @@ export function CollectionsList() {
                   ) : (
                     <>
                       <button
-                        onClick={() => setSelectedCollection(collection.name)}
+                        onClick={() => {
+                          setSelectedCollection(collection.name);
+                          onCollectionSelect?.();
+                        }}
                         className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/30 dark:hover:to-purple-950/30 transition-all duration-300 group"
                         title="View documents"
                       >
@@ -186,6 +214,13 @@ export function CollectionsList() {
           ))
         )}
       </div>
+
+      {/* Create Collection Modal */}
+      <CollectionCreator
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreated={handleCollectionCreated}
+      />
     </div>
   );
 }

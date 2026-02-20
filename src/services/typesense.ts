@@ -223,6 +223,37 @@ class TypesenseService {
     }
   }
 
+  async createCollection(schema: {
+    name: string;
+    fields: Array<{
+      name: string;
+      type: string;
+      facet?: boolean;
+      optional?: boolean;
+      index?: boolean;
+      sort?: boolean;
+      infix?: boolean;
+      num_dim?: number;
+    }>;
+    default_sorting_field?: string;
+    enable_nested_fields?: boolean;
+    token_separators?: string[];
+    symbols_to_index?: string[];
+  }): Promise<CollectionSchema> {
+    if (!this.client) {
+      throw new Error("Client not initialized");
+    }
+    try {
+      const response = await this.client
+        .collections()
+        .create(schema as any);
+      return response as unknown as CollectionSchema;
+    } catch (error) {
+      console.error("Error creating collection:", error);
+      throw error;
+    }
+  }
+
   async exportDocuments(collectionName: string): Promise<string> {
     if (!this.client) {
       throw new Error("Client not initialized");
