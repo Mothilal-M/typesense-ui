@@ -163,6 +163,81 @@ class TypesenseService {
       throw error;
     }
   }
+
+  async createDocument(
+    collectionName: string,
+    document: Document
+  ): Promise<Document> {
+    if (!this.client) {
+      throw new Error("Client not initialized");
+    }
+    try {
+      const response = await this.client
+        .collections(collectionName)
+        .documents()
+        .create(document);
+      return response as Document;
+    } catch (error) {
+      console.error("Error creating document:", error);
+      throw error;
+    }
+  }
+
+  async updateDocument(
+    collectionName: string,
+    documentId: string,
+    document: Partial<Document>
+  ): Promise<Document> {
+    if (!this.client) {
+      throw new Error("Client not initialized");
+    }
+    try {
+      const response = await this.client
+        .collections(collectionName)
+        .documents(documentId)
+        .update(document);
+      return response as Document;
+    } catch (error) {
+      console.error("Error updating document:", error);
+      throw error;
+    }
+  }
+
+  async importDocuments(
+    collectionName: string,
+    documents: Document[],
+    action: "create" | "upsert" | "update" = "create"
+  ): Promise<any[]> {
+    if (!this.client) {
+      throw new Error("Client not initialized");
+    }
+    try {
+      const response = await this.client
+        .collections(collectionName)
+        .documents()
+        .import(documents, { action });
+      return response;
+    } catch (error) {
+      console.error("Error importing documents:", error);
+      throw error;
+    }
+  }
+
+  async exportDocuments(collectionName: string): Promise<string> {
+    if (!this.client) {
+      throw new Error("Client not initialized");
+    }
+    try {
+      const response = await this.client
+        .collections(collectionName)
+        .documents()
+        .export();
+      return response as unknown as string;
+    } catch (error) {
+      console.error("Error exporting documents:", error);
+      throw error;
+    }
+  }
 }
 
 export const typesenseService = new TypesenseService();

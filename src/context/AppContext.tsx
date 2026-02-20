@@ -98,7 +98,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshCollections = async () => {
-    if (!isConnected) return;
+    if (!typesenseService.isConnected()) return;
 
     setIsLoading(true);
     setError(null);

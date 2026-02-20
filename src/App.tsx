@@ -3,6 +3,7 @@ import { ConnectionSetup } from "./components/ConnectionSetup";
 import { Header } from "./components/Header";
 import { CollectionsList } from "./components/CollectionsList";
 import { CollectionViewer } from "./components/CollectionViewer";
+import { ToastContainer } from "./components/ui/Toast";
 
 function AppContent() {
   const { isConnected } = useApp();
@@ -30,6 +31,7 @@ function App() {
   return (
     <AppProvider>
       <AppContent />
+      <ToastContainer />
     </AppProvider>
   );
 }

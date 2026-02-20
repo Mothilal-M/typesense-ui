@@ -9,10 +9,17 @@ import {
   SortDesc,
   Columns,
   Filter,
+  Plus,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import type { Document } from "../types";
 import { useCollectionDocuments } from "../hooks/useCollectionDocuments";
+import { DocumentEditor } from "./DocumentEditor";
+import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { typesenseService } from "../services/typesense";
+import { useToast } from "../hooks/useToast";
 
 export function CollectionViewer() {
   const { selectedCollection } = useApp();
@@ -33,7 +40,10 @@ export function CollectionViewer() {
     sortBy,
     toggleSort,
     sortOrder,
+    refresh,
   } = useCollectionDocuments(selectedCollection);
+
+  const { addToast } = useToast();
 
   // UI state
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
@@ -42,6 +52,12 @@ export function CollectionViewer() {
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set());
   const [showColumnPicker, setShowColumnPicker] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+
+  // CRUD state
+  const [showDocumentEditor, setShowDocumentEditor] = useState(false);
+  const [editingDocument, setEditingDocument] = useState<Document | null>(null);
+  const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (collection) {
@@ -62,6 +78,47 @@ export function CollectionViewer() {
       }
       return newSet;
     });
+  };
+
+  const handleEditDocument = (doc: Document) => {
+    setEditingDocument(doc);
+    setShowDocumentEditor(true);
+  };
+
+  const handleCreateDocument = () => {
+    setEditingDocument(null);
+    setShowDocumentEditor(true);
+  };
+
+  const handleCloseEditor = () => {
+    setShowDocumentEditor(false);
+    setEditingDocument(null);
+  };
+
+  const handleDocumentSaved = () => {
+    refresh();
+  };
+
+  const handleDeleteDocument = (docId: string) => {
+    setDocumentToDelete(docId);
+  };
+
+  const confirmDelete = async () => {
+    if (!documentToDelete || !collection) return;
+
+    setIsDeleting(true);
+    try {
+      await typesenseService.deleteDocument(collection.name, documentToDelete);
+      addToast("success", "Document deleted successfully");
+      setDocumentToDelete(null);
+      refresh();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to delete document";
+      addToast("error", message);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   if (!selectedCollection) {
@@ -129,6 +186,15 @@ export function CollectionViewer() {
           </div>
 
           <div className="flex items-center space-x-2">
+            {/* New Document Button */}
+            <button
+              onClick={handleCreateDocument}
+              className="px-3 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all duration-300 flex items-center space-x-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Document</span>
+            </button>
+
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`btn-secondary flex items-center space-x-2 transition-all duration-300 ${
@@ -200,10 +266,11 @@ export function CollectionViewer() {
             {collection.fields
               .filter(
                 (field) =>
-                  field.facet ||
-                  field.type.includes("int") ||
-                  field.type.includes("float") ||
-                  field.type === "bool"
+                  field.index !== false &&
+                  (field.facet ||
+                    field.type.includes("int") ||
+                    field.type.includes("float") ||
+                    field.type === "bool")
               )
               .map((field) => (
                 <div key={field.name} className="relative">
@@ -287,6 +354,14 @@ export function CollectionViewer() {
         )}
       </div>
 
+      {/* Search Error Banner */}
+      {error && collection && (
+        <div className="mx-5 mt-3 p-4 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-300 dark:border-red-800 rounded-xl text-red-800 dark:text-red-200 text-sm animate-fade-in">
+          <p className="font-semibold">Search Error</p>
+          <p className="text-xs mt-1 opacity-80">{error}</p>
+        </div>
+      )}
+
       {/* Table */}
       <div className="flex-1 overflow-auto">
         {isLoading && documents.length === 0 ? (
@@ -318,7 +393,7 @@ export function CollectionViewer() {
           <table className="w-full">
             <thead className="bg-gradient-to-r from-gray-50 to-blue-50/30 dark:from-slate-900 dark:to-slate-800 sticky top-0 shadow-sm backdrop-blur-sm">
               <tr>
-                <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight w-20">
+                <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight w-32">
                   Actions
                 </th>
                 {collection?.fields
@@ -350,13 +425,31 @@ export function CollectionViewer() {
                   style={{ animationDelay: `${idx * 20}ms` }}
                 >
                   <td className="px-5 py-4">
-                    <button
-                      onClick={() => setSelectedDocument(doc)}
-                      className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all duration-300 group"
-                      title="View JSON"
-                    >
-                      <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                    </button>
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => setSelectedDocument(doc)}
+                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all duration-300 group"
+                        title="View JSON"
+                      >
+                        <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                      </button>
+                      <button
+                        onClick={() => handleEditDocument(doc)}
+                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 transition-all duration-300 group"
+                        title="Edit document"
+                      >
+                        <Pencil className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors" />
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleDeleteDocument(String(doc.id))
+                        }
+                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 dark:hover:from-red-900/30 dark:hover:to-orange-900/30 transition-all duration-300 group"
+                        title="Delete document"
+                      >
+                        <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
+                      </button>
+                    </div>
                   </td>
                   {collection?.fields
                     .filter((field) => visibleColumns.has(field.name))
@@ -452,6 +545,30 @@ export function CollectionViewer() {
           </div>
         </div>
       )}
+
+      {/* Document Editor Modal */}
+      {collection && (
+        <DocumentEditor
+          isOpen={showDocumentEditor}
+          collectionName={collection.name}
+          document={editingDocument}
+          fields={collection.fields}
+          onClose={handleCloseEditor}
+          onSaved={handleDocumentSaved}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!documentToDelete}
+        onConfirm={confirmDelete}
+        onCancel={() => setDocumentToDelete(null)}
+        title="Delete Document"
+        message={`Are you sure you want to delete document "${documentToDelete}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

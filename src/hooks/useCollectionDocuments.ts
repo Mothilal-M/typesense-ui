@@ -68,10 +68,13 @@ export function useCollectionDocuments(selectedCollection: string | null) {
     try {
       const queryBy =
         collection.fields
-          .filter((f) => ["string", "string[]"].includes(f.type))
+          .filter(
+            (f) =>
+              ["string", "string[]"].includes(f.type) && f.index !== false
+          )
           .map((f) => f.name)
           .join(",") ||
-        collection.fields[0]?.name ||
+        collection.fields.filter((f) => f.index !== false)[0]?.name ||
         "*";
 
       const filterBy = buildFilterString();
@@ -106,6 +109,7 @@ export function useCollectionDocuments(selectedCollection: string | null) {
 
       const fieldSchema = collection?.fields.find((f) => f.name === field);
       if (!fieldSchema) return;
+      if (fieldSchema.index === false) return;
 
       if (fieldSchema.type === "string" || fieldSchema.type === "string[]") {
         filterParts.push(`${field}:=${value}`);
@@ -174,5 +178,6 @@ export function useCollectionDocuments(selectedCollection: string | null) {
     sortBy,
     toggleSort,
     sortOrder,
+    refresh: performSearch,
   };
 }
