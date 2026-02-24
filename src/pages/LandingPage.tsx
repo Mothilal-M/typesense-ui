@@ -23,7 +23,7 @@ export default function LandingPage() {
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} className="relative min-h-screen overflow-x-hidden">
+    <div ref={containerRef} className="landing-dark relative min-h-screen overflow-x-hidden text-white">
       <LiquidGlassBackground />
       <Navbar />
       <main>

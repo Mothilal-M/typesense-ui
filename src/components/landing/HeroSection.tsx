@@ -12,7 +12,6 @@ export function HeroSection() {
   useGSAP(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    // 3D entrance animations
     tl.from(".hero-badge", {
       opacity: 0, y: 40, rotationX: -30, duration: 0.7,
       transformPerspective: 800, transformOrigin: "center bottom",
@@ -52,21 +51,21 @@ export function HeroSection() {
           {/* Left — Text content */}
           <div style={{ perspective: "1000px" }}>
             {/* Badge */}
-            <div className="hero-badge inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200/50 dark:border-purple-700/50 mb-6 sm:mb-8 shadow-lg">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-300">
+            <div className="hero-badge inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-[#0cdcf7]/10 border border-[#0cdcf7]/20 mb-6 sm:mb-8 shadow-lg shadow-[#0cdcf7]/5">
+              <span className="w-2 h-2 rounded-full bg-[#4ff0b7] animate-pulse" />
+              <span className="text-xs sm:text-sm font-semibold text-[#0cdcf7]">
                 Open Source Typesense Dashboard
               </span>
             </div>
 
-            {/* Headline with 3D word reveal */}
+            {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] mb-5 sm:mb-6" style={{ perspective: "800px" }}>
               {headlineWords.map((word, i) => (
                 <span key={i} className="hero-word inline-block mr-2.5 sm:mr-3" style={{ transformStyle: "preserve-3d" }}>
                   <span className={
                     i >= 3
-                      ? "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
-                      : "text-gray-900 dark:text-white"
+                      ? "bg-gradient-to-r from-[#0cdcf7] via-[#8d30ff] to-[#ff4fba] bg-clip-text text-transparent"
+                      : "text-white"
                   }>
                     {word}
                   </span>
@@ -75,20 +74,17 @@ export function HeroSection() {
             </h1>
 
             {/* Subtitle */}
-            <p className="hero-subtitle text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-lg mb-8 leading-relaxed font-medium">
+            <p className="hero-subtitle text-base sm:text-lg text-[#8b8da0] max-w-lg mb-8 leading-relaxed font-medium">
               A beautiful, modern dashboard to browse collections, search documents,
               and manage your Typesense data — all from your browser.
             </p>
 
-            {/* CTA Buttons with 3D hover */}
+            {/* CTA Buttons */}
             <div className="flex flex-wrap gap-3 sm:gap-4 mb-10 sm:mb-12" style={{ perspective: "600px" }}>
               <Link
                 to="/app"
-                className="hero-cta group px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-semibold shadow-xl shadow-purple-500/25 hover:shadow-2xl transition-all duration-300 flex items-center space-x-2"
-                style={{
-                  transform: "translateZ(0px)",
-                  transition: "transform 0.3s, box-shadow 0.3s",
-                }}
+                className="hero-cta group px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-gradient-to-r from-[#0cdcf7] via-[#8d30ff] to-[#ff4fba] text-white font-semibold shadow-xl shadow-[#8d30ff]/25 hover:shadow-2xl hover:shadow-[#8d30ff]/35 transition-all duration-300 flex items-center space-x-2"
+                style={{ transform: "translateZ(0px)", transition: "transform 0.3s, box-shadow 0.3s" }}
                 onMouseEnter={(e) => { e.currentTarget.style.transform = "translateZ(20px) scale(1.05)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = "translateZ(0px) scale(1)"; }}
               >
@@ -101,7 +97,7 @@ export function HeroSection() {
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hero-cta px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-200 font-semibold border border-gray-200/50 dark:border-slate-700/50 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2"
+                className="hero-cta px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-[#12141f]/80 backdrop-blur-sm text-gray-300 font-semibold border border-[#1e2035]/80 shadow-lg hover:shadow-xl hover:border-[#8d30ff]/30 transition-all duration-300 flex items-center space-x-2"
                 style={{ transform: "translateZ(0px)", transition: "transform 0.3s" }}
                 onMouseEnter={(e) => { e.currentTarget.style.transform = "translateZ(15px) scale(1.03)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = "translateZ(0px) scale(1)"; }}
@@ -113,7 +109,7 @@ export function HeroSection() {
               </a>
             </div>
 
-            {/* Stats with 3D depth */}
+            {/* Stats */}
             <div className="flex flex-wrap gap-6 sm:gap-8" style={{ perspective: "600px" }}>
               {[
                 { value: "100%", label: "Open Source" },
@@ -121,10 +117,10 @@ export function HeroSection() {
                 { value: "Zero", label: "Config Needed" },
               ].map((stat) => (
                 <div key={stat.label} className="hero-stat" style={{ transformStyle: "preserve-3d" }}>
-                  <div className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <div className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-[#0cdcf7] to-[#8d30ff] bg-clip-text text-transparent">
                     {stat.value}
                   </div>
-                  <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  <div className="text-xs sm:text-sm text-[#5c5e70] font-medium">
                     {stat.label}
                   </div>
                 </div>
@@ -132,7 +128,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right — 3D Illustration with floating cards */}
+          {/* Right — 3D Illustration */}
           <div className="hero-3d-card relative hidden lg:block" style={{ perspective: "1200px", transformStyle: "preserve-3d" }}>
             <div
               className="relative"
@@ -143,73 +139,73 @@ export function HeroSection() {
               }}
             >
               {/* Glow behind */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-3xl scale-110" style={{ transform: "translateZ(-30px)" }} />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0cdcf7]/15 via-[#8d30ff]/15 to-[#ff4fba]/15 rounded-3xl blur-3xl scale-110" style={{ transform: "translateZ(-30px)" }} />
 
-              {/* Main card with 3D depth */}
+              {/* Main card */}
               <div
-                className="relative bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-slate-700/50 shadow-2xl p-4 sm:p-6"
+                className="relative bg-[#12141f]/60 backdrop-blur-xl rounded-2xl border border-[#1e2035]/50 shadow-2xl shadow-black/40 p-4 sm:p-6"
                 style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}
               >
                 <DashboardIllustration className="w-full h-auto" />
               </div>
 
-              {/* Floating mini-cards around the illustration */}
+              {/* Floating mini-cards */}
               <div
-                className="hero-floating-card absolute -top-6 -right-6 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-xl p-3 shadow-xl border border-gray-200/50 dark:border-slate-700/50"
+                className="hero-floating-card absolute -top-6 -right-6 landing-card rounded-xl p-3 shadow-xl"
                 style={{
                   transform: `translateZ(60px) rotateY(${mouse.x * 3}deg)`,
                   transition: "transform 0.3s ease-out",
                 }}
               >
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4ff0b7] to-emerald-600 flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-800 dark:text-gray-100">Search Time</div>
-                    <div className="text-[10px] text-green-600 dark:text-green-400 font-semibold">0.4ms</div>
+                    <div className="text-xs font-bold text-gray-100">Search Time</div>
+                    <div className="text-[10px] text-[#4ff0b7] font-semibold">0.4ms</div>
                   </div>
                 </div>
               </div>
 
               <div
-                className="hero-floating-card absolute -bottom-4 -left-6 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-xl p-3 shadow-xl border border-gray-200/50 dark:border-slate-700/50"
+                className="hero-floating-card absolute -bottom-4 -left-6 landing-card rounded-xl p-3 shadow-xl"
                 style={{
                   transform: `translateZ(50px) rotateX(${mouse.y * 3}deg)`,
                   transition: "transform 0.3s ease-out",
                 }}
               >
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0cdcf7] to-[#8d30ff] flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-800 dark:text-gray-100">Collections</div>
-                    <div className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">12 Active</div>
+                    <div className="text-xs font-bold text-gray-100">Collections</div>
+                    <div className="text-[10px] text-[#0cdcf7] font-semibold">12 Active</div>
                   </div>
                 </div>
               </div>
 
               <div
-                className="hero-floating-card absolute top-1/2 -right-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-xl p-3 shadow-xl border border-gray-200/50 dark:border-slate-700/50"
+                className="hero-floating-card absolute top-1/2 -right-10 landing-card rounded-xl p-3 shadow-xl"
                 style={{
                   transform: `translateZ(70px) rotateY(${mouse.x * 5}deg)`,
                   transition: "transform 0.3s ease-out",
                 }}
               >
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ff4fba] to-orange-500 flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-800 dark:text-gray-100">Documents</div>
-                    <div className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">1.2M indexed</div>
+                    <div className="text-xs font-bold text-gray-100">Documents</div>
+                    <div className="text-[10px] text-[#ff4fba] font-semibold">1.2M indexed</div>
                   </div>
                 </div>
               </div>

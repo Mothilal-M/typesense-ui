@@ -15,7 +15,7 @@ const steps = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.856-1.514a4.5 4.5 0 00-6.364-6.364L4.5 8.257" />
       </svg>
     ),
-    gradient: "from-emerald-500 to-cyan-500",
+    gradient: "from-[#4ff0b7] to-[#0cdcf7]",
   },
   {
     number: "02",
@@ -26,7 +26,7 @@ const steps = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
     ),
-    gradient: "from-blue-500 to-purple-600",
+    gradient: "from-[#0cdcf7] to-[#8d30ff]",
   },
   {
     number: "03",
@@ -38,7 +38,7 @@ const steps = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     ),
-    gradient: "from-purple-500 to-pink-600",
+    gradient: "from-[#8d30ff] to-[#ff4fba]",
   },
 ];
 
@@ -94,7 +94,6 @@ export function HowItWorksSection() {
       transformPerspective: 800,
     });
 
-    // 3D step cards fly in from depth with rotation
     gsap.from(".hiw-step", {
       scrollTrigger: {
         trigger: ".hiw-steps",
@@ -112,7 +111,6 @@ export function HowItWorksSection() {
       transformPerspective: 1200,
     });
 
-    // Connectors draw in
     gsap.from(".hiw-connector", {
       scrollTrigger: {
         trigger: ".hiw-steps",
@@ -125,7 +123,6 @@ export function HowItWorksSection() {
       ease: "power2.inOut",
     });
 
-    // Step numbers float up from behind
     gsap.from(".hiw-number", {
       scrollTrigger: {
         trigger: ".hiw-steps",
@@ -148,42 +145,42 @@ export function HowItWorksSection() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="hiw-heading text-center mb-14 sm:mb-18" style={{ perspective: "800px" }}>
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100/80 dark:bg-purple-900/30 text-xs font-semibold text-purple-600 dark:text-purple-400 mb-4 border border-purple-200/50 dark:border-purple-700/50">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#8d30ff]/10 text-xs font-semibold text-[#8d30ff] mb-4 border border-[#8d30ff]/20">
             How It Works
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4">
-            <span className="text-gray-900 dark:text-white">Up and Running in </span>
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="text-white">Up and Running in </span>
+            <span className="bg-gradient-to-r from-[#8d30ff] to-[#ff4fba] bg-clip-text text-transparent">
               3 Simple Steps
             </span>
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
+          <p className="text-base sm:text-lg text-[#8b8da0] max-w-2xl mx-auto font-medium">
             No installation, no configuration files, no accounts. Just connect and go.
           </p>
         </div>
 
-        {/* Steps with 3D perspective */}
+        {/* Steps */}
         <div className="hiw-steps relative grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6" style={{ perspective: "1200px" }}>
-          {/* Connectors (desktop only) */}
+          {/* Connectors (desktop) */}
           <div className="hidden lg:block absolute top-24 left-[33%] right-[33%] h-0.5 z-10">
-            <div className="hiw-connector h-full bg-gradient-to-r from-cyan-400 to-purple-500 opacity-40 origin-left rounded-full shadow-sm shadow-purple-400/20" />
+            <div className="hiw-connector h-full bg-gradient-to-r from-[#0cdcf7] to-[#8d30ff] opacity-50 origin-left rounded-full shadow-sm shadow-[#8d30ff]/20" />
           </div>
           <div className="hidden lg:block absolute top-24 left-[66%] right-[0%] h-0.5 -mr-[33%] z-10">
-            <div className="hiw-connector h-full bg-gradient-to-r from-purple-500 to-pink-500 opacity-40 origin-left rounded-full shadow-sm shadow-pink-400/20" style={{ width: "50%" }} />
+            <div className="hiw-connector h-full bg-gradient-to-r from-[#8d30ff] to-[#ff4fba] opacity-50 origin-left rounded-full shadow-sm shadow-[#ff4fba]/20" style={{ width: "50%" }} />
           </div>
 
           {steps.map((step, i) => (
             <div key={step.number} className="hiw-step relative" style={{ transformStyle: "preserve-3d" }}>
-              {/* Step number — 3D depth behind card */}
+              {/* Step number */}
               <div
-                className="hiw-number absolute -top-3 -left-2 text-7xl sm:text-8xl font-black text-gray-100 dark:text-slate-800/50 select-none pointer-events-none leading-none"
+                className="hiw-number absolute -top-3 -left-2 text-7xl sm:text-8xl font-black text-[#1e2035]/60 select-none pointer-events-none leading-none"
                 style={{ transform: "translateZ(-20px)" }}
               >
                 {step.number}
               </div>
 
-              <Step3DCard className="relative bg-white/70 dark:bg-slate-900/70 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-slate-700/50 p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                {/* Icon with 3D pop */}
+              <Step3DCard className="relative landing-card rounded-2xl p-6 sm:p-8 hover:shadow-2xl hover:shadow-black/30 transition-shadow duration-300">
+                {/* Icon */}
                 <div
                   className={`w-14 h-14 rounded-xl bg-gradient-to-br ${step.gradient} flex items-center justify-center text-white mb-5 shadow-lg`}
                   style={{ transform: "translateZ(30px)" }}
@@ -193,12 +190,12 @@ export function HowItWorksSection() {
 
                 {/* Content */}
                 <h3
-                  className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight"
+                  className="text-xl sm:text-2xl font-bold text-white mb-3 tracking-tight"
                   style={{ transform: "translateZ(20px)" }}
                 >
                   {step.title}
                 </h3>
-                <p className="text-sm sm:text-[15px] text-gray-600 dark:text-gray-400 leading-relaxed" style={{ transform: "translateZ(10px)" }}>
+                <p className="text-sm sm:text-[15px] text-[#8b8da0] leading-relaxed" style={{ transform: "translateZ(10px)" }}>
                   {step.description}
                 </p>
 
@@ -210,7 +207,7 @@ export function HowItWorksSection() {
                       className={`h-1.5 rounded-full transition-all ${
                         j === i
                           ? `w-8 bg-gradient-to-r ${step.gradient}`
-                          : "w-1.5 bg-gray-300 dark:bg-slate-700"
+                          : "w-1.5 bg-[#1e2035]"
                       }`}
                     />
                   ))}

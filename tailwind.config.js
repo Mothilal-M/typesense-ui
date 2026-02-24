@@ -28,6 +28,18 @@ export default {
           800: "#075985",
           900: "#0c4a6e",
         },
+        neon: {
+          cyan: "#0cdcf7",
+          mint: "#4ff0b7",
+          pink: "#ff4fba",
+          purple: "#8d30ff",
+        },
+        landing: {
+          base: "#0a0a1a",
+          surface: "#0f1025",
+          card: "#12141f",
+          "card-border": "#1e2035",
+        },
       },
       animation: {
         "spin-slow": "spin 3s linear infinite",
@@ -40,6 +52,10 @@ export default {
         "blob-3": "blobMorph3 18s ease-in-out infinite",
         "blob-4": "blobMorph1 22s ease-in-out infinite reverse",
         "blob-5": "blobMorph2 30s ease-in-out infinite reverse",
+        "orb-drift-1": "orbDrift1 20s ease-in-out infinite",
+        "orb-drift-2": "orbDrift2 25s ease-in-out infinite",
+        "orb-drift-3": "orbDrift3 22s ease-in-out infinite",
+        "orb-drift-4": "orbDrift4 18s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -95,6 +111,24 @@ export default {
             transform: "translate(10%, 20%) scale(1.2) rotate(180deg)",
             borderRadius: "30% 70% 50% 50% / 50% 50% 70% 30%",
           },
+        },
+        orbDrift1: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(30px, -20px) scale(1.1)" },
+          "66%": { transform: "translate(-20px, 15px) scale(0.95)" },
+        },
+        orbDrift2: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(-25px, 25px) scale(1.05)" },
+        },
+        orbDrift3: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "25%": { transform: "translate(20px, 10px) scale(1.08)" },
+          "75%": { transform: "translate(-15px, -20px) scale(0.92)" },
+        },
+        orbDrift4: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(15px, -15px) scale(1.1)" },
         },
       },
       backdropBlur: {
