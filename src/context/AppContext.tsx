@@ -6,6 +6,7 @@ import {
   ReactNode,
 } from "react";
 import type { TypesenseConfig, CollectionSchema, ThemeMode } from "../types";
+import type { TableResult } from "../types/chat";
 import { typesenseService } from "../services/typesense";
 
 interface AppContextType {
@@ -29,6 +30,16 @@ interface AppContextType {
   // Theme
   theme: ThemeMode;
   toggleTheme: () => void;
+
+  // Gemini AI
+  geminiApiKey: string | null;
+  setGeminiApiKey: (key: string) => void;
+  clearGeminiApiKey: () => void;
+
+  // AI Results (displayed in main content area)
+  aiTableData: TableResult | null;
+  setAiTableData: (data: TableResult | null) => void;
+  clearAiTableData: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -49,6 +60,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem("theme");
     return (saved as ThemeMode) || "light";
   });
+  const [geminiApiKey, setGeminiApiKeyState] = useState<string | null>(() => {
+    return localStorage.getItem("gemini-api-key") || import.meta.env.VITE_GEMINI_API_KEY || null;
+  });
+  const [aiTableData, setAiTableData] = useState<TableResult | null>(null);
 
   // Apply theme to document
   useEffect(() => {
@@ -119,6 +134,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
+  const setGeminiApiKey = (key: string) => {
+    setGeminiApiKeyState(key);
+    localStorage.setItem("gemini-api-key", key);
+  };
+
+  const clearGeminiApiKey = () => {
+    setGeminiApiKeyState(null);
+    localStorage.removeItem("gemini-api-key");
+  };
+
+  const clearAiTableData = () => {
+    setAiTableData(null);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -135,6 +164,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setError,
         theme,
         toggleTheme,
+        geminiApiKey,
+        setGeminiApiKey,
+        clearGeminiApiKey,
+        aiTableData,
+        setAiTableData,
+        clearAiTableData,
       }}
     >
       {children}

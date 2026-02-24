@@ -13,6 +13,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Sparkles,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import type { Document } from "../types";
@@ -23,7 +24,7 @@ import { typesenseService } from "../services/typesense";
 import { useToast } from "../hooks/useToast";
 
 export function CollectionViewer() {
-  const { selectedCollection } = useApp();
+  const { selectedCollection, aiTableData, clearAiTableData } = useApp();
   const {
     collection,
     documents,
@@ -121,6 +122,139 @@ export function CollectionViewer() {
       setIsDeleting(false);
     }
   };
+
+  // AI Results View - shown when AI returns table data
+  if (aiTableData) {
+    return (
+      <div className="h-full flex flex-col bg-gradient-to-br from-gray-50/30 via-purple-50/20 to-blue-50/20 dark:from-slate-950/30 dark:via-purple-900/10 dark:to-slate-950/30">
+        {/* AI Results Header */}
+        <div className="p-3 sm:p-5 border-b border-purple-200/50 dark:border-purple-700/50 bg-gradient-to-r from-purple-50/80 via-blue-50/80 to-pink-50/80 dark:from-purple-900/30 dark:via-blue-900/20 dark:to-pink-900/20 backdrop-blur-md shadow-sm">
+          <div className="flex items-center justify-between gap-2">
+            <div className="animate-fade-in min-w-0 flex items-center space-x-3">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
+                  AI Results
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                  <span className="font-semibold">{aiTableData.collectionName}</span>
+                  {" \u2014 "}
+                  <span className="font-semibold text-purple-600 dark:text-purple-400">
+                    {aiTableData.rows.length}
+                  </span>
+                  {aiTableData.totalFound !== undefined && (
+                    <span> of {aiTableData.totalFound.toLocaleString()}</span>
+                  )}
+                  {" documents"}
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={clearAiTableData}
+              className="px-3 py-2 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-slate-800/80 hover:bg-red-50 dark:hover:bg-red-900/20 border border-gray-200 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-700 shadow-sm hover:shadow-md transition-all duration-300 flex items-center space-x-1.5"
+            >
+              <X className="w-4 h-4" />
+              <span className="hidden sm:inline">Close</span>
+            </button>
+          </div>
+        </div>
+
+        {/* AI Results Table */}
+        <div className="flex-1 overflow-auto">
+          {aiTableData.rows.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center animate-fade-in">
+                <p className="text-gray-600 dark:text-gray-400 text-lg font-semibold">
+                  No documents returned
+                </p>
+              </div>
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-purple-50 to-blue-50/30 dark:from-purple-900/30 dark:to-slate-800 sticky top-0 shadow-sm backdrop-blur-sm">
+                <tr>
+                  <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight w-20">
+                    View
+                  </th>
+                  {aiTableData.columns.map((col) => (
+                    <th
+                      key={col}
+                      className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight"
+                    >
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm divide-y divide-gray-200/50 dark:divide-gray-700/50">
+                {aiTableData.rows.map((row, idx) => (
+                  <tr
+                    key={idx}
+                    className="hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-blue-50/50 dark:hover:from-purple-900/20 dark:hover:to-blue-900/20 transition-all duration-300 animate-fade-in"
+                    style={{ animationDelay: `${idx * 20}ms` }}
+                  >
+                    <td className="px-5 py-4">
+                      <button
+                        onClick={() => setSelectedDocument(row as Document)}
+                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30 transition-all duration-300 group"
+                        title="View JSON"
+                      >
+                        <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" />
+                      </button>
+                    </td>
+                    {aiTableData.columns.map((col) => (
+                      <td
+                        key={col}
+                        className="px-5 py-4 text-sm text-gray-900 dark:text-gray-50 max-w-xs truncate font-semibold"
+                        title={formatValue(row[col])}
+                      >
+                        {formatValue(row[col])}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* JSON Viewer Modal for AI results */}
+        {selectedDocument &&
+          createPortal(
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-[9999] animate-fade-in"
+              onClick={() => setSelectedDocument(null)}
+            >
+              <div
+                className="bg-white dark:bg-slate-900 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] sm:max-h-[80vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-4 sm:p-5 border-b border-gray-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30 rounded-t-2xl">
+                  <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    Document JSON
+                  </h3>
+                  <button
+                    onClick={() => setSelectedDocument(null)}
+                    className="p-2 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/30 dark:hover:to-red-900/20 transition-all duration-300 group"
+                  >
+                    <X className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400" />
+                  </button>
+                </div>
+                <div className="p-4 sm:p-6 overflow-auto max-h-[calc(90vh-70px)] sm:max-h-[calc(80vh-80px)]">
+                  <pre className="text-xs sm:text-sm text-gray-900 dark:text-gray-50 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 p-4 sm:p-6 rounded-xl overflow-x-auto border border-gray-200/50 dark:border-slate-700/50 shadow-inner font-mono leading-relaxed">
+                    {JSON.stringify(selectedDocument, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )}
+      </div>
+    );
+  }
 
   if (!selectedCollection) {
     return (

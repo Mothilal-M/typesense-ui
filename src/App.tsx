@@ -6,6 +6,8 @@ import { Header } from "./components/Header";
 import { CollectionsList } from "./components/CollectionsList";
 import { CollectionViewer } from "./components/CollectionViewer";
 import { ToastContainer } from "./components/ui/Toast";
+import { AiChatButton } from "./components/ai/AiChatButton";
+import { AiChatPanel } from "./components/ai/AiChatPanel";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 
@@ -72,6 +74,16 @@ function DashboardContent() {
   );
 }
 
+function AiChat() {
+  const [chatOpen, setChatOpen] = useState(false);
+  return (
+    <>
+      <AiChatButton isOpen={chatOpen} onClick={() => setChatOpen(!chatOpen)} />
+      <AiChatPanel isOpen={chatOpen} />
+    </>
+  );
+}
+
 function App() {
   return (
     <AppProvider>
@@ -81,6 +93,7 @@ function App() {
           <Route path="/app" element={<DashboardContent />} />
         </Routes>
       </Suspense>
+      <AiChat />
       <ToastContainer />
     </AppProvider>
   );
