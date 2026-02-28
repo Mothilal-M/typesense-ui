@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { Github } from "lucide-react";
+import { Logo } from "../ui/Logo";
 
 export function Navbar() {
   const navRef = useRef<HTMLDivElement>(null);
@@ -55,9 +56,7 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center gap-2" ref={brandRef}>
-          <div className="w-8 h-8 rounded bg-gradient-to-tr from-[#0cdcf7] to-[#8d30ff] flex items-center justify-center font-bold text-white shadow-[0_0_15px_rgba(12,220,247,0.5)]">
-            T
-          </div>
+          <Logo size={36} />
           <span className="text-xl font-heading font-bold text-white tracking-wide flex">
             {"Typesense UI".split("").map((char, i) => (
               <span key={i} className="nav-brand-char inline-block">
