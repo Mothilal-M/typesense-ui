@@ -46,8 +46,8 @@ export function Modal({
       <div
         className={`bg-white dark:bg-slate-900 rounded-2xl shadow-2xl ${maxWidth} w-full max-h-[90vh] sm:max-h-[85vh] overflow-hidden border border-gray-200/50 dark:border-slate-700/50`}
       >
-        <div className="p-4 sm:p-5 border-b border-gray-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
-          <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate mr-2">
+        <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between bg-gray-50 dark:bg-slate-800/80">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate mr-2">
             {title}
           </h3>
           <button

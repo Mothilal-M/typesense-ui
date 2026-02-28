@@ -3,6 +3,7 @@ import { Sun, Moon } from "lucide-react";
 import type { TypesenseConfig } from "../types";
 import { useApp } from "../context/AppContext";
 import { Link } from "react-router-dom";
+import { Logo } from "./ui/Logo";
 
 export function ConnectionSetup() {
   const { setConfig, theme, toggleTheme } = useApp();
@@ -106,11 +107,7 @@ export function ConnectionSetup() {
         >
           {/* Logo */}
           <div className="flex items-center space-x-3 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center shadow-xl">
-              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-              </svg>
-            </div>
+            <Logo size={48} />
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Typesense UI
             </span>

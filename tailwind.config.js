@@ -58,8 +58,18 @@ export default {
         "orb-drift-2": "orbDrift2 25s ease-in-out infinite",
         "orb-drift-3": "orbDrift3 22s ease-in-out infinite",
         "orb-drift-4": "orbDrift4 18s ease-in-out infinite",
+        twinkle: "twinkle 2s ease-in-out infinite",
+        "cloud-drift": "cloudDrift 6s ease-in-out infinite",
       },
       keyframes: {
+        twinkle: {
+          "0%, 100%": { opacity: "0.2", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.4)" },
+        },
+        cloudDrift: {
+          "0%, 100%": { transform: "translateX(0px)" },
+          "50%": { transform: "translateX(6px)" },
+        },
         fadeIn: {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
