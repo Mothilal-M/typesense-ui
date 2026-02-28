@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext";
 import { ThemeToggle } from "./ui/ThemeToggle";
 import { Logo } from "./ui/Logo";
 import { useToast } from "../hooks/useToast";
+import { useConnectionHealth, type HealthStatus } from "../hooks/useConnectionHealth";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -17,6 +18,7 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
     toggleTheme,
   } = useApp();
   const { addToast } = useToast();
+  const { status, latencyMs } = useConnectionHealth();
 
   const handleDisconnect = () => {
     disconnect();
@@ -55,6 +57,9 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
                 </p>
               )}
             </div>
+
+            {/* Health indicator */}
+            <HealthBadge status={status} latencyMs={latencyMs} />
           </div>
 
           <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
@@ -73,5 +78,37 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
         </div>
       </div>
     </header>
+  );
+}
+
+const healthColors: Record<HealthStatus, string> = {
+  healthy: "bg-emerald-500",
+  degraded: "bg-amber-500",
+  down: "bg-red-500",
+  unknown: "bg-gray-400 dark:bg-gray-600",
+};
+const healthLabels: Record<HealthStatus, string> = {
+  healthy: "Connected",
+  degraded: "Slow",
+  down: "Disconnected",
+  unknown: "Checking…",
+};
+
+function HealthBadge({ status, latencyMs }: { status: HealthStatus; latencyMs: number | null }) {
+  if (status === "unknown") return null;
+
+  return (
+    <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100/80 dark:bg-slate-800/80 text-[11px] font-medium text-gray-600 dark:text-gray-300 select-none">
+      <span className="relative flex h-2 w-2">
+        {status === "healthy" && (
+          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${healthColors[status]} opacity-40`} />
+        )}
+        <span className={`relative inline-flex rounded-full h-2 w-2 ${healthColors[status]}`} />
+      </span>
+      <span>{healthLabels[status]}</span>
+      {latencyMs !== null && status !== "down" && (
+        <span className="text-gray-400 dark:text-gray-500">{latencyMs}ms</span>
+      )}
+    </div>
   );
 }

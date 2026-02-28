@@ -111,10 +111,28 @@ export function CollectionViewer() {
   const confirmDelete = async () => {
     if (!documentToDelete || !collection) return;
 
+    // Cache the document before deleting (for undo)
+    const cachedDoc = documents.find(
+      (d) => String(d.id) === documentToDelete
+    );
+
     setIsDeleting(true);
     try {
       await typesenseService.deleteDocument(collection.name, documentToDelete);
-      addToast("success", "Document deleted successfully");
+
+      const undoRestore = cachedDoc
+        ? () => {
+            typesenseService
+              .createDocument(collection.name, cachedDoc)
+              .then(() => {
+                addToast("success", "Document restored");
+                refresh();
+              })
+              .catch(() => addToast("error", "Failed to restore document"));
+          }
+        : undefined;
+
+      addToast("success", "Document deleted", 5000, undoRestore);
       fireSparkle();
       setDocumentToDelete(null);
       refresh();
@@ -519,13 +537,27 @@ export function CollectionViewer() {
           <TableSkeleton rows={10} cols={Math.min(visibleColumns.size || 5, 8)} />
         ) : documents.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-center animate-fade-in">
+            <div className="text-center animate-fade-in max-w-sm">
               <div className="inline-block p-6 rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-900 dark:to-slate-800 mb-4 shadow-xl">
                 <Search className="w-16 h-16 text-gray-500 dark:text-gray-400" />
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-lg font-semibold">
-                No documents found
+                {searchQuery && searchQuery !== "*" ? "No matching documents" : "No documents yet"}
               </p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1.5">
+                {searchQuery && searchQuery !== "*"
+                  ? "Try a different search query or clear your filters."
+                  : "Create your first document to get started."}
+              </p>
+              {(!searchQuery || searchQuery === "*") && (
+                <button
+                  onClick={handleCreateDocument}
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Document
+                </button>
+              )}
             </div>
           </div>
         ) : (
