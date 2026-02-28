@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Key, ExternalLink } from "lucide-react";
+import { Key, ExternalLink, Check } from "lucide-react";
 import { useApp } from "../../context/AppContext";
+import { useToast } from "../../hooks/useToast";
+import { fireConfetti } from "../../lib/confetti";
 
 export function GeminiKeySetup() {
   const { setGeminiApiKey } = useApp();
+  const { addToast } = useToast();
   const [key, setKey] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
     if (!key.trim()) {
@@ -13,6 +17,11 @@ export function GeminiKeySetup() {
       return;
     }
     setGeminiApiKey(key.trim());
+    setSaved(true);
+    addToast("success", "Gemini API key saved — AI chat is ready!");
+    fireConfetti();
+    // Reset the saved state after animation
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -46,9 +55,21 @@ export function GeminiKeySetup() {
         )}
         <button
           onClick={handleSave}
-          className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all duration-300"
+          disabled={saved}
+          className={`w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 ${
+            saved
+              ? "bg-emerald-500 shadow-lg shadow-emerald-500/25"
+              : "bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg shadow-purple-500/25 hover:shadow-xl"
+          }`}
         >
-          Save API Key
+          {saved ? (
+            <>
+              <Check className="w-4 h-4" />
+              Connected!
+            </>
+          ) : (
+            "Save API Key"
+          )}
         </button>
         <a
           href="https://aistudio.google.com/apikey"

@@ -3,6 +3,7 @@ import { Plus, X, Database } from "lucide-react";
 import { Modal } from "./ui/Modal";
 import { typesenseService } from "../services/typesense";
 import { useToast } from "../hooks/useToast";
+import { fireConfetti } from "../lib/confetti";
 
 const FIELD_TYPES = [
   "string",
@@ -158,6 +159,7 @@ export function CollectionCreator({
     try {
       await typesenseService.createCollection(schema);
       addToast("success", `Collection "${collectionName.trim()}" created successfully`);
+      fireConfetti();
       onCreated();
       onClose();
     } catch (err) {

@@ -4,9 +4,12 @@ import type { TypesenseConfig } from "../types";
 import { useApp } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import { Logo } from "./ui/Logo";
+import { useToast } from "../hooks/useToast";
+import { fireStars } from "../lib/confetti";
 
 export function ConnectionSetup() {
   const { setConfig, theme, toggleTheme } = useApp();
+  const { addToast } = useToast();
   const [formData, setFormData] = useState<TypesenseConfig>({
     apiKey: "",
     host: "localhost",
@@ -31,8 +34,11 @@ export function ConnectionSetup() {
 
     try {
       await setConfig(formData);
+      addToast("success", "Connected to Typesense successfully!");
+      fireStars();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to connect");
+      addToast("error", err instanceof Error ? err.message : "Failed to connect to Typesense");
     } finally {
       setIsConnecting(false);
     }

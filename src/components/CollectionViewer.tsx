@@ -23,6 +23,7 @@ import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Tooltip } from "./ui/Tooltip";
 import { typesenseService } from "../services/typesense";
 import { useToast } from "../hooks/useToast";
+import { fireSparkle } from "../lib/confetti";
 
 export function CollectionViewer() {
   const { selectedCollection, aiTableData, clearAiTableData } = useApp();
@@ -113,6 +114,7 @@ export function CollectionViewer() {
     try {
       await typesenseService.deleteDocument(collection.name, documentToDelete);
       addToast("success", "Document deleted successfully");
+      fireSparkle();
       setDocumentToDelete(null);
       refresh();
     } catch (err) {

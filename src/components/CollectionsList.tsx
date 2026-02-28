@@ -36,6 +36,7 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
     setDeletingCollection(collectionName);
     try {
       await typesenseService.deleteCollection(collectionName);
+      addToast("success", `Collection "${collectionName}" deleted`);
       await refreshCollections();
       if (selectedCollection === collectionName) {
         setSelectedCollection(null);
