@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useCallback, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AppProvider, useApp } from "./context/AppContext";
 import { ConnectionSetup } from "./components/ConnectionSetup";
@@ -9,6 +9,7 @@ import { ToastContainer } from "./components/ui/Toast";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { AiChatButton } from "./components/ai/AiChatButton";
 import { AiChatPanel } from "./components/ai/AiChatPanel";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 
@@ -26,8 +27,17 @@ function LoadingFallback() {
 }
 
 function DashboardContent() {
-  const { isConnected } = useApp();
+  const { isConnected, refreshCollections } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Keyboard shortcuts (only when connected)
+  useKeyboardShortcuts({
+    onSearch: useCallback(() => window.dispatchEvent(new Event("focus-search")), []),
+    onNewDoc: useCallback(() => window.dispatchEvent(new Event("new-document")), []),
+    onRefresh: useCallback(() => { refreshCollections(); }, [refreshCollections]),
+    onToggleAI: useCallback(() => window.dispatchEvent(new Event("toggle-ai-chat")), []),
+    onEscape: useCallback(() => setSidebarOpen(false), []),
+  });
 
   if (!isConnected) {
     return <ConnectionSetup />;
@@ -78,6 +88,13 @@ function DashboardContent() {
 function AiChat() {
   const [chatOpen, setChatOpen] = useState(false);
   const location = useLocation();
+
+  // Listen for toggle-ai-chat event from keyboard shortcut
+  useEffect(() => {
+    const handler = () => setChatOpen((v) => !v);
+    window.addEventListener("toggle-ai-chat", handler);
+    return () => window.removeEventListener("toggle-ai-chat", handler);
+  }, []);
 
   // Hide the chat button on the landing page
   if (location.pathname === "/") {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   Search,
@@ -49,6 +49,26 @@ export function CollectionViewer() {
   } = useCollectionDocuments(selectedCollection);
 
   const { addToast } = useToast();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Listen for global "focus-search" event (fired by keyboard shortcuts)
+  useEffect(() => {
+    const handler = () => searchInputRef.current?.focus();
+    window.addEventListener("focus-search", handler);
+    return () => window.removeEventListener("focus-search", handler);
+  }, []);
+
+  // Listen for global "new-document" event (fired by keyboard shortcuts)
+  useEffect(() => {
+    const handler = () => {
+      if (collection) {
+        setEditingDocument(null);
+        setShowDocumentEditor(true);
+      }
+    };
+    window.addEventListener("new-document", handler);
+    return () => window.removeEventListener("new-document", handler);
+  }, [collection]);
 
   // UI state
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
@@ -350,7 +370,7 @@ export function CollectionViewer() {
 
           <div className="flex items-center flex-shrink-0 gap-2">
             {/* New Document Button */}
-            <Tooltip content="Create new document" side="bottom">
+            <Tooltip content="Create new document (Ctrl+N)" side="bottom">
               <button
                 onClick={handleCreateDocument}
                 className="px-3 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all duration-300 flex items-center space-x-1.5"
@@ -418,6 +438,7 @@ export function CollectionViewer() {
         <div className="relative group">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
           <input
+            ref={searchInputRef}
             type="text"
             placeholder="Search documents... (use * for all)"
             value={searchQuery}
@@ -425,8 +446,11 @@ export function CollectionViewer() {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-gray-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 shadow-md focus:shadow-xl"
+            className="w-full pl-12 pr-24 py-3 border border-gray-300 dark:border-slate-600 rounded-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-gray-900 dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 shadow-md focus:shadow-xl"
           />
+          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-slate-700 rounded border border-gray-200 dark:border-slate-600 select-none pointer-events-none">
+            Ctrl K
+          </kbd>
         </div>
 
         {/* Filters */}
