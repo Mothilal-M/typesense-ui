@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   Search,
   ChevronLeft,
@@ -24,7 +25,7 @@ import {
   Code,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
-import type { Document } from "../types";
+import type { Document, CollectionSchema } from "../types";
 import { useCollectionDocuments } from "../hooks/useCollectionDocuments";
 import { DocumentEditor } from "./DocumentEditor";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
@@ -110,6 +111,44 @@ export function CollectionViewer() {
   const [showQueryDiff, setShowQueryDiff] = useState(false);
   const [showNLRules, setShowNLRules] = useState(false);
   const [showEmbeddableWidget, setShowEmbeddableWidget] = useState(false);
+
+  // Column resize state
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  const resizingCol = useRef<string | null>(null);
+  const resizeStartX = useRef(0);
+  const resizeStartW = useRef(0);
+
+  // Virtual scrolling ref
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleResizeStart = useCallback(
+    (e: React.MouseEvent, colName: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      resizingCol.current = colName;
+      resizeStartX.current = e.clientX;
+      resizeStartW.current = columnWidths[colName] || 180;
+
+      const onMouseMove = (ev: MouseEvent) => {
+        if (!resizingCol.current) return;
+        const delta = ev.clientX - resizeStartX.current;
+        const newWidth = Math.max(60, resizeStartW.current + delta);
+        setColumnWidths((prev) => ({ ...prev, [resizingCol.current!]: newWidth }));
+      };
+      const onMouseUp = () => {
+        resizingCol.current = null;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+      };
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+    },
+    [columnWidths]
+  );
 
   useEffect(() => {
     if (collection) {
@@ -669,7 +708,7 @@ export function CollectionViewer() {
       )}
 
       {/* Table */}
-      <div className="flex-1 overflow-auto">
+      <div ref={tableContainerRef} className="flex-1 overflow-auto">
         {isLoading && documents.length === 0 ? (
           <TableSkeleton rows={10} cols={Math.min(visibleColumns.size || 5, 8)} />
         ) : documents.length === 0 ? (
@@ -698,85 +737,20 @@ export function CollectionViewer() {
             </div>
           </div>
         ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight w-36 min-w-[144px] bg-gray-50 dark:bg-slate-900">
-                  Actions
-                </th>
-                {collection?.fields
-                  .filter((field) => visibleColumns.has(field.name))
-                  .map((field) => (
-                    <th
-                      key={field.name}
-                      className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight cursor-pointer bg-gray-50 dark:bg-slate-900 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-300"
-                      onClick={() => toggleSort(field.name)}
-                    >
-                      <div className="flex items-center space-x-1">
-                        <span>{field.name}</span>
-                        {sortBy === field.name &&
-                          (sortOrder === "asc" ? (
-                            <SortAsc className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                          ) : (
-                            <SortDesc className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                          ))}
-                      </div>
-                    </th>
-                  ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm divide-y divide-gray-200/50 dark:divide-gray-700/50">
-              {documents.map((doc, idx) => (
-                <tr
-                  key={doc.id || idx}
-                  className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition-all duration-300 animate-fade-in"
-                  style={{ animationDelay: `${idx * 20}ms` }}
-                >
-                  <td className="px-5 py-4 w-36 min-w-[144px]">
-                    <div className="flex items-center space-x-1 flex-nowrap">
-                      <Tooltip content="View JSON" side="bottom">
-                        <button
-                          onClick={() => setSelectedDocument(doc)}
-                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all duration-300 group"
-                        >
-                          <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                        </button>
-                      </Tooltip>
-                      <Tooltip content="Edit document" side="bottom">
-                        <button
-                          onClick={() => handleEditDocument(doc)}
-                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 transition-all duration-300 group"
-                        >
-                          <Pencil className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors" />
-                        </button>
-                      </Tooltip>
-                      <Tooltip content="Delete document" side="bottom">
-                        <button
-                          onClick={() =>
-                            handleDeleteDocument(String(doc.id))
-                          }
-                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 dark:hover:from-red-900/30 dark:hover:to-orange-900/30 transition-all duration-300 group"
-                        >
-                          <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
-                        </button>
-                      </Tooltip>
-                    </div>
-                  </td>
-                  {collection?.fields
-                    .filter((field) => visibleColumns.has(field.name))
-                    .map((field) => (
-                      <td
-                        key={field.name}
-                        className="px-5 py-4 text-sm text-gray-900 dark:text-gray-50 max-w-xs truncate font-semibold"
-                        title={String(doc[field.name])}
-                      >
-                        {formatValue(doc[field.name])}
-                      </td>
-                    ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <VirtualTable
+            documents={documents}
+            collection={collection}
+            visibleColumns={visibleColumns}
+            columnWidths={columnWidths}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            toggleSort={toggleSort}
+            onResizeStart={handleResizeStart}
+            onView={setSelectedDocument}
+            onEdit={handleEditDocument}
+            onDelete={(doc) => handleDeleteDocument(String(doc.id))}
+            containerRef={tableContainerRef}
+          />
         )}
       </div>
 
@@ -959,6 +933,153 @@ export function CollectionViewer() {
         />
       )}
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* VirtualTable – virtualized rows + resizable column headers          */
+/* ------------------------------------------------------------------ */
+const ROW_HEIGHT = 52; // px – matches py-4 + content
+
+interface VirtualTableProps {
+  documents: Document[];
+  collection: CollectionSchema | null;
+  visibleColumns: Set<string>;
+  columnWidths: Record<string, number>;
+  sortBy: string;
+  sortOrder: string;
+  toggleSort: (field: string) => void;
+  onResizeStart: (e: React.MouseEvent, colName: string) => void;
+  onView: (doc: Document) => void;
+  onEdit: (doc: Document) => void;
+  onDelete: (doc: Document) => void;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}
+
+function VirtualTable({
+  documents,
+  collection,
+  visibleColumns,
+  columnWidths,
+  sortBy,
+  sortOrder,
+  toggleSort,
+  onResizeStart,
+  onView,
+  onEdit,
+  onDelete,
+  containerRef,
+}: VirtualTableProps) {
+  const rowVirtualizer = useVirtualizer({
+    count: documents.length,
+    getScrollElement: () => containerRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 10,
+  });
+
+  const fields = collection?.fields.filter((f) => visibleColumns.has(f.name)) ?? [];
+
+  return (
+    <table className="w-full" style={{ tableLayout: "fixed" }}>
+      <colgroup>
+        <col style={{ width: 144 }} />
+        {fields.map((f) => (
+          <col key={f.name} style={{ width: columnWidths[f.name] || 180 }} />
+        ))}
+      </colgroup>
+      <thead className="bg-gray-50 dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
+        <tr>
+          <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight bg-gray-50 dark:bg-slate-900">
+            Actions
+          </th>
+          {fields.map((field) => (
+            <th
+              key={field.name}
+              className="relative px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight cursor-pointer bg-gray-50 dark:bg-slate-900 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-300 select-none"
+              style={{ width: columnWidths[field.name] || 180 }}
+              onClick={() => toggleSort(field.name)}
+            >
+              <div className="flex items-center space-x-1 overflow-hidden">
+                <span className="truncate">{field.name}</span>
+                {sortBy === field.name &&
+                  (sortOrder === "asc" ? (
+                    <SortAsc className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+                  ) : (
+                    <SortDesc className="w-4 h-4 flex-shrink-0 text-purple-600 dark:text-purple-400" />
+                  ))}
+              </div>
+              {/* Resize handle */}
+              <div
+                onMouseDown={(e) => onResizeStart(e, field.name)}
+                onClick={(e) => e.stopPropagation()}
+                className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-blue-400/40 transition-colors z-10"
+              />
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody
+        className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm"
+        style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}
+      >
+        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+          const doc = documents[virtualRow.index];
+          return (
+            <tr
+              key={doc.id || virtualRow.index}
+              className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition-all duration-300 border-b border-gray-200/50 dark:border-gray-700/50"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <td className="px-5 py-3" style={{ width: 144 }}>
+                <div className="flex items-center space-x-1 flex-nowrap">
+                  <Tooltip content="View JSON" side="bottom">
+                    <button
+                      onClick={() => onView(doc)}
+                      className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all duration-300 group"
+                    >
+                      <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                    </button>
+                  </Tooltip>
+                  <Tooltip content="Edit document" side="bottom">
+                    <button
+                      onClick={() => onEdit(doc)}
+                      className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 transition-all duration-300 group"
+                    >
+                      <Pencil className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors" />
+                    </button>
+                  </Tooltip>
+                  <Tooltip content="Delete document" side="bottom">
+                    <button
+                      onClick={() => onDelete(doc)}
+                      className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 dark:hover:from-red-900/30 dark:hover:to-orange-900/30 transition-all duration-300 group"
+                    >
+                      <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
+                    </button>
+                  </Tooltip>
+                </div>
+              </td>
+              {fields.map((field) => (
+                <td
+                  key={field.name}
+                  className="px-5 py-3 text-sm text-gray-900 dark:text-gray-50 truncate font-semibold"
+                  style={{ width: columnWidths[field.name] || 180 }}
+                  title={String(doc[field.name])}
+                >
+                  {formatValue(doc[field.name])}
+                </td>
+              ))}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 

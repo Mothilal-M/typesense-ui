@@ -52,6 +52,7 @@
     "@gsap/react": "^2.1.2",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
+    "@tanstack/react-virtual": "^3.13.19",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.0.0",
     "express": "^4.21.2",

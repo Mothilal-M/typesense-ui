@@ -8,6 +8,7 @@ import {
 import type { TypesenseConfig, CollectionSchema, ThemeMode } from "../types";
 import type { TableResult } from "../types/chat";
 import { typesenseService } from "../services/typesense";
+import { readSecure, writeSecure, removeSecure } from "../lib/crypto";
 
 interface AppContextType {
   // Connection
@@ -45,10 +46,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [config, setConfigState] = useState<TypesenseConfig | null>(() => {
-    const saved = localStorage.getItem("typesense-config");
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [config, setConfigState] = useState<TypesenseConfig | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [collections, setCollections] = useState<CollectionSchema[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
@@ -60,10 +58,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem("theme");
     return (saved as ThemeMode) || "light";
   });
-  const [geminiApiKey, setGeminiApiKeyState] = useState<string | null>(() => {
-    return localStorage.getItem("gemini-api-key") || import.meta.env.VITE_GEMINI_API_KEY || null;
-  });
+  const [geminiApiKey, setGeminiApiKeyState] = useState<string | null>(
+    import.meta.env.VITE_GEMINI_API_KEY || null
+  );
   const [aiTableData, setAiTableData] = useState<TableResult | null>(null);
+
+  // Load encrypted credentials on mount
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [savedConfig, savedKey] = await Promise.all([
+        readSecure<TypesenseConfig>("typesense-config"),
+        readSecure<string>("gemini-api-key"),
+      ]);
+      if (cancelled) return;
+      if (savedConfig) {
+        setConfigState(savedConfig);
+      }
+      if (savedKey) {
+        setGeminiApiKeyState(savedKey);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   // Apply theme to document
   useEffect(() => {
@@ -75,12 +92,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Initialize connection from saved config
+  // Initialize connection from saved config (fires when async load completes)
   useEffect(() => {
     if (config && !isConnected) {
       connectToTypesense(config);
     }
-  }, []);
+  }, [config]);
 
   const connectToTypesense = async (newConfig: TypesenseConfig) => {
     setIsLoading(true);
@@ -89,7 +106,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       typesenseService.initialize(newConfig);
       await typesenseService.testConnection();
       setConfigState(newConfig);
-      localStorage.setItem("typesense-config", JSON.stringify(newConfig));
+      await writeSecure("typesense-config", newConfig);
       setIsConnected(true);
       await refreshCollections();
     } catch (err) {
@@ -109,7 +126,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsConnected(false);
     setCollections([]);
     setSelectedCollection(null);
-    localStorage.removeItem("typesense-config");
+    removeSecure("typesense-config");
   };
 
   const refreshCollections = async () => {
@@ -136,12 +153,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setGeminiApiKey = (key: string) => {
     setGeminiApiKeyState(key);
-    localStorage.setItem("gemini-api-key", key);
+    writeSecure("gemini-api-key", key);
   };
 
   const clearGeminiApiKey = () => {
     setGeminiApiKeyState(null);
-    localStorage.removeItem("gemini-api-key");
+    removeSecure("gemini-api-key");
   };
 
   const clearAiTableData = () => {
