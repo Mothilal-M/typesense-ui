@@ -20,6 +20,7 @@ import type { Document } from "../types";
 import { useCollectionDocuments } from "../hooks/useCollectionDocuments";
 import { DocumentEditor } from "./DocumentEditor";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { Tooltip } from "./ui/Tooltip";
 import { typesenseService } from "../services/typesense";
 import { useToast } from "../hooks/useToast";
 
@@ -53,7 +54,7 @@ export function CollectionViewer() {
   );
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set());
   const [showColumnPicker, setShowColumnPicker] = useState(false);
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   // CRUD state
   const [showDocumentEditor, setShowDocumentEditor] = useState(false);
@@ -174,7 +175,7 @@ export function CollectionViewer() {
             </div>
           ) : (
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-purple-50 to-blue-50/30 dark:from-purple-900/30 dark:to-slate-800 sticky top-0 shadow-sm backdrop-blur-sm">
+              <thead className="bg-purple-50 dark:bg-slate-800 sticky top-0 z-20 shadow-sm">
                 <tr>
                   <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight w-20">
                     View
@@ -236,12 +237,14 @@ export function CollectionViewer() {
                   <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                     Document JSON
                   </h3>
-                  <button
-                    onClick={() => setSelectedDocument(null)}
-                    className="p-2 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/30 dark:hover:to-red-900/20 transition-all duration-300 group"
-                  >
-                    <X className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400" />
-                  </button>
+                  <Tooltip content="Close" side="left">
+                    <button
+                      onClick={() => setSelectedDocument(null)}
+                      className="p-2 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/30 dark:hover:to-red-900/20 transition-all duration-300 group"
+                    >
+                      <X className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400" />
+                    </button>
+                  </Tooltip>
                 </div>
                 <div className="p-4 sm:p-6 overflow-auto max-h-[calc(90vh-70px)] sm:max-h-[calc(80vh-80px)]">
                   <pre className="text-xs sm:text-sm text-gray-900 dark:text-gray-50 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 p-4 sm:p-6 rounded-xl overflow-x-auto border border-gray-200/50 dark:border-slate-700/50 shadow-inner font-mono leading-relaxed">
@@ -296,12 +299,16 @@ export function CollectionViewer() {
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-gray-50/30 via-blue-50/20 to-purple-50/20 dark:from-slate-950/30 dark:via-gray-800/20 dark:to-slate-950/30">
       {/* Header */}
-      <div className="p-3 sm:p-5 border-b border-gray-200/50 dark:border-slate-700/50 space-y-3 sm:space-y-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm">
-        <div className="flex items-center justify-between gap-2">
-          <div className="animate-fade-in min-w-0">
-            <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent truncate">
-              {collection?.name}
-            </h2>
+      <div className="relative z-30 p-3 sm:p-5 border-b border-gray-200/50 dark:border-slate-700/50 space-y-3 sm:space-y-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm">
+        <div className="flex items-center justify-between gap-3">
+          <div className="animate-fade-in min-w-0 flex-1 overflow-hidden">
+            <Tooltip content={collection?.name} side="bottom">
+              <h2
+                className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent truncate block"
+              >
+                {collection?.name}
+              </h2>
+            </Tooltip>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               {searchResponse ? (
                 <span className="flex items-center space-x-2">
@@ -320,39 +327,45 @@ export function CollectionViewer() {
             </p>
           </div>
 
-          <div className="flex items-center flex-wrap gap-2">
+          <div className="flex items-center flex-shrink-0 gap-2">
             {/* New Document Button */}
-            <button
-              onClick={handleCreateDocument}
-              className="px-3 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all duration-300 flex items-center space-x-1.5"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">New Document</span>
-            </button>
+            <Tooltip content="Create new document" side="bottom">
+              <button
+                onClick={handleCreateDocument}
+                className="px-3 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all duration-300 flex items-center space-x-1.5"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">New Document</span>
+              </button>
+            </Tooltip>
 
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`btn-secondary flex items-center space-x-1 sm:space-x-2 transition-all duration-300 ${
-                showFilters
-                  ? "bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 ring-2 ring-blue-400 dark:ring-purple-500"
-                  : ""
-              }`}
-            >
-              <Filter className="w-4 h-4" />
-              <span className="hidden sm:inline">Filters</span>
-            </button>
+            <Tooltip content={showFilters ? "Hide filters" : "Show filters"} side="bottom">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`btn-secondary flex items-center space-x-1 sm:space-x-2 transition-all duration-300 ${
+                  showFilters
+                    ? "bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 ring-2 ring-blue-400 dark:ring-purple-500"
+                    : ""
+                }`}
+              >
+                <Filter className="w-4 h-4" />
+                <span className="hidden sm:inline">Filters</span>
+              </button>
+            </Tooltip>
 
             <div className="relative">
-              <button
-                onClick={() => setShowColumnPicker(!showColumnPicker)}
-                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
-              >
-                <Columns className="w-4 h-4" />
-                <span className="hidden sm:inline">Columns</span>
-              </button>
+              <Tooltip content={showColumnPicker ? "Hide column picker" : "Show column picker"} side="bottom">
+                <button
+                  onClick={() => setShowColumnPicker(!showColumnPicker)}
+                  className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+                >
+                  <Columns className="w-4 h-4" />
+                  <span className="hidden sm:inline">Columns</span>
+                </button>
+              </Tooltip>
 
               {showColumnPicker && collection && (
-                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 p-4 z-10 max-h-96 overflow-y-auto">
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 p-4 z-50 max-h-96 overflow-y-auto">
                   <div className="space-y-2">
                     {collection.fields.map((field) => (
                       <label
@@ -526,9 +539,9 @@ export function CollectionViewer() {
           </div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-gray-50 to-blue-50/30 dark:from-slate-900 dark:to-slate-800 sticky top-0 shadow-sm backdrop-blur-sm">
+            <thead className="bg-gray-50 dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
               <tr>
-                <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight w-32">
+                <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight w-36 min-w-[144px] bg-gray-50 dark:bg-slate-900">
                   Actions
                 </th>
                 {collection?.fields
@@ -536,7 +549,7 @@ export function CollectionViewer() {
                   .map((field) => (
                     <th
                       key={field.name}
-                      className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight cursor-pointer hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all duration-300"
+                      className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-200 uppercase tracking-tight cursor-pointer bg-gray-50 dark:bg-slate-900 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-300"
                       onClick={() => toggleSort(field.name)}
                     >
                       <div className="flex items-center space-x-1">
@@ -559,31 +572,34 @@ export function CollectionViewer() {
                   className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition-all duration-300 animate-fade-in"
                   style={{ animationDelay: `${idx * 20}ms` }}
                 >
-                  <td className="px-5 py-4">
-                    <div className="flex items-center space-x-1">
-                      <button
-                        onClick={() => setSelectedDocument(doc)}
-                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all duration-300 group"
-                        title="View JSON"
-                      >
-                        <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                      </button>
-                      <button
-                        onClick={() => handleEditDocument(doc)}
-                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 transition-all duration-300 group"
-                        title="Edit document"
-                      >
-                        <Pencil className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors" />
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleDeleteDocument(String(doc.id))
-                        }
-                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 dark:hover:from-red-900/30 dark:hover:to-orange-900/30 transition-all duration-300 group"
-                        title="Delete document"
-                      >
-                        <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
-                      </button>
+                  <td className="px-5 py-4 w-36 min-w-[144px]">
+                    <div className="flex items-center space-x-1 flex-nowrap">
+                      <Tooltip content="View JSON" side="bottom">
+                        <button
+                          onClick={() => setSelectedDocument(doc)}
+                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all duration-300 group"
+                        >
+                          <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Edit document" side="bottom">
+                        <button
+                          onClick={() => handleEditDocument(doc)}
+                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 transition-all duration-300 group"
+                        >
+                          <Pencil className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Delete document" side="bottom">
+                        <button
+                          onClick={() =>
+                            handleDeleteDocument(String(doc.id))
+                          }
+                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 dark:hover:from-red-900/30 dark:hover:to-orange-900/30 transition-all duration-300 group"
+                        >
+                          <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
+                        </button>
+                      </Tooltip>
                     </div>
                   </td>
                   {collection?.fields
@@ -606,7 +622,7 @@ export function CollectionViewer() {
 
       {/* Pagination */}
       {searchResponse && totalPages > 0 && (
-        <div className="p-3 sm:p-5 border-t border-gray-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg">
+        <div className="p-3 sm:p-5 pr-20 sm:pr-24 border-t border-gray-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
             <div className="text-xs sm:text-sm text-gray-700 dark:text-gray-200 font-semibold">
               <span className="font-bold text-blue-600 dark:text-blue-400">
@@ -623,27 +639,31 @@ export function CollectionViewer() {
             </div>
 
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="p-2 sm:p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm hover:shadow-md border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
-              >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-200" />
-              </button>
+              <Tooltip content="Previous page" side="top">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 sm:p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm hover:shadow-md border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
+                >
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-200" />
+                </button>
+              </Tooltip>
 
               <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent px-2 sm:px-3 whitespace-nowrap">
                 {currentPage} / {totalPages}
               </span>
 
-              <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage >= totalPages}
-                className="p-2 sm:p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm hover:shadow-md border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
-              >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-200" />
-              </button>
+              <Tooltip content="Next page" side="top">
+                <button
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
+                  disabled={currentPage >= totalPages}
+                  className="p-2 sm:p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm hover:shadow-md border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
+                >
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-200" />
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -664,12 +684,14 @@ export function CollectionViewer() {
                 <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Document JSON
                 </h3>
-                <button
-                  onClick={() => setSelectedDocument(null)}
-                  className="p-2 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/30 dark:hover:to-red-900/20 transition-all duration-300 group"
-                >
-                  <X className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400" />
-                </button>
+                <Tooltip content="Close" side="left">
+                  <button
+                    onClick={() => setSelectedDocument(null)}
+                    className="p-2 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/30 dark:hover:to-red-900/20 transition-all duration-300 group"
+                  >
+                    <X className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400" />
+                  </button>
+                </Tooltip>
               </div>
               <div className="p-4 sm:p-6 overflow-auto max-h-[calc(90vh-70px)] sm:max-h-[calc(80vh-80px)]">
                 <pre className="text-xs sm:text-sm text-gray-900 dark:text-gray-50 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 p-4 sm:p-6 rounded-xl overflow-x-auto border border-gray-200/50 dark:border-slate-700/50 shadow-inner font-mono leading-relaxed">

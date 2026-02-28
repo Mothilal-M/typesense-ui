@@ -4,6 +4,7 @@ import { useApp } from "../context/AppContext";
 import { typesenseService } from "../services/typesense";
 import { CollectionCreator } from "./CollectionCreator";
 import { useToast } from "../hooks/useToast";
+import { Tooltip } from "./ui/Tooltip";
 
 interface CollectionsListProps {
   onCollectionSelect?: () => void;
@@ -62,13 +63,14 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
           <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
             Collections ({collections.length})
           </h2>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="p-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-            title="Create new collection"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
+          <Tooltip content="Create new collection" side="bottom">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="p-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </Tooltip>
         </div>
 
         <div className="relative group">
@@ -130,9 +132,11 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
                           : "bg-gray-400 dark:bg-gray-600"
                       }`}
                     ></div>
-                    <h3 className="font-bold text-gray-900 dark:text-gray-50 tracking-tight">
-                      {collection.name}
-                    </h3>
+                    <Tooltip content={collection.name} side="right">
+                      <h3 className="font-bold text-gray-900 dark:text-gray-50 tracking-tight truncate max-w-[140px]">
+                        {collection.name}
+                      </h3>
+                    </Tooltip>
                   </div>
                   <div className="flex items-center space-x-3">
                     <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">
@@ -168,23 +172,25 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
                     </div>
                   ) : (
                     <>
-                      <button
-                        onClick={() => {
-                          setSelectedCollection(collection.name);
-                          onCollectionSelect?.();
-                        }}
-                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/30 dark:hover:to-purple-950/30 transition-all duration-300 group"
-                        title="View documents"
-                      >
-                        <Eye className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                      </button>
-                      <button
-                        onClick={() => setShowDeleteConfirm(collection.name)}
-                        className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-950/30 dark:hover:to-red-900/30 transition-all duration-300 group"
-                        title="Delete collection"
-                      >
-                        <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
-                      </button>
+                      <Tooltip content="View documents" side="top">
+                        <button
+                          onClick={() => {
+                            setSelectedCollection(collection.name);
+                            onCollectionSelect?.();
+                          }}
+                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/30 dark:hover:to-purple-950/30 transition-all duration-300 group"
+                        >
+                          <Eye className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Delete collection" side="top">
+                        <button
+                          onClick={() => setShowDeleteConfirm(collection.name)}
+                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-950/30 dark:hover:to-red-900/30 transition-all duration-300 group"
+                        >
+                          <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
+                        </button>
+                      </Tooltip>
                     </>
                   )}
                 </div>

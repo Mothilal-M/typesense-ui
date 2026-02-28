@@ -1,5 +1,6 @@
-import { Database, LogOut, Sun, Moon, RefreshCw, Menu, X } from "lucide-react";
+import { Database, LogOut, RefreshCw, Menu, X } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import { ThemeToggle } from "./ui/ThemeToggle";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -63,17 +64,7 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
               />
             </button>
 
-            <button
-              onClick={toggleTheme}
-              className="p-2 sm:p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-slate-800 dark:hover:to-slate-700 transition-all duration-300 border border-transparent hover:border-blue-200 dark:hover:border-slate-600"
-              title="Toggle theme"
-            >
-              {theme === "light" ? (
-                <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 transition-transform duration-300 hover:rotate-12" />
-              ) : (
-                <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 transition-transform duration-300 hover:rotate-180" />
-              )}
-            </button>
+            <ThemeToggle isDark={theme === "dark"} onToggle={toggleTheme} />
 
             <button
               onClick={disconnect}
