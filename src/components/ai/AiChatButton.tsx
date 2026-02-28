@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { X } from "lucide-react";
 
 interface AiChatButtonProps {
@@ -5,7 +6,7 @@ interface AiChatButtonProps {
   onClick: () => void;
 }
 
-function RobotIcon({ className }: { className?: string }) {
+const RobotIcon = memo(function RobotIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
@@ -117,7 +118,7 @@ function RobotIcon({ className }: { className?: string }) {
       <circle cx="14" cy="48" r="2.5" fill="url(#headGrad)" />
     </svg>
   );
-}
+});
 
 export function AiChatButton({ isOpen, onClick }: AiChatButtonProps) {
   return (

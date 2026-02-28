@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { typesenseService } from "../services/typesense";
+import { useDebounce } from "./useDebounce";
 import type {
   CollectionSchema,
   Document,
@@ -18,6 +19,7 @@ export function useCollectionDocuments(selectedCollection: string | null) {
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("*");
+  const debouncedQuery = useDebounce(searchQuery, 300);
   const [filters, setFilters] = useState<FilterValue>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(25);
@@ -37,7 +39,7 @@ export function useCollectionDocuments(selectedCollection: string | null) {
     if (collection) {
       performSearch();
     }
-  }, [collection, searchQuery, filters, currentPage, sortBy, sortOrder]);
+  }, [collection, debouncedQuery, filters, currentPage, sortBy, sortOrder]);
 
   const loadCollection = async () => {
     if (!selectedCollection) return;

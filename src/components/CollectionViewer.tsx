@@ -24,6 +24,7 @@ import { Tooltip } from "./ui/Tooltip";
 import { typesenseService } from "../services/typesense";
 import { useToast } from "../hooks/useToast";
 import { fireSparkle } from "../lib/confetti";
+import { TableSkeleton } from "./ui/Skeleton";
 
 export function CollectionViewer() {
   const { selectedCollection, aiTableData, clearAiTableData } = useApp();
@@ -515,19 +516,7 @@ export function CollectionViewer() {
       {/* Table */}
       <div className="flex-1 overflow-auto">
         {isLoading && documents.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center animate-fade-in">
-              <div className="relative">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 dark:border-slate-700 border-t-transparent mx-auto mb-4"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 animate-pulse"></div>
-                </div>
-              </div>
-              <p className="text-gray-600 dark:text-gray-400 font-semibold text-lg">
-                Loading documents...
-              </p>
-            </div>
-          </div>
+          <TableSkeleton rows={10} cols={Math.min(visibleColumns.size || 5, 8)} />
         ) : documents.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center animate-fade-in">

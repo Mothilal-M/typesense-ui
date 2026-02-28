@@ -1,8 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { geminiService } from "../services/gemini";
 import { useApp } from "../context/AppContext";
 import type { Content } from "@google/generative-ai";
 import type { ChatMessage, ChatStatus, PendingAction } from "../types/chat";
+
+const MAX_HISTORY = 50;
+const RATE_LIMIT_MS = 2000;
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -47,10 +50,17 @@ export function useChat() {
     [pendingAction]
   );
 
+  const lastSentRef = useRef<number>(0);
+
   const sendMessage = useCallback(
     async (text: string) => {
       if (!text.trim() || status !== "idle") return;
       if (!geminiService.isInitialized()) return;
+
+      // Rate-limit: prevent rapid-fire requests
+      const now = Date.now();
+      if (now - lastSentRef.current < RATE_LIMIT_MS) return;
+      lastSentRef.current = now;
 
       const userMsg: ChatMessage = {
         id: generateId(),
@@ -99,7 +109,7 @@ export function useChat() {
         }
 
         setMessages((prev) =>
-          prev.map((m) => (m.id === placeholderId ? assistantMsg : m))
+          prev.map((m) => (m.id === placeholderId ? assistantMsg : m)).slice(-MAX_HISTORY)
         );
       } catch (err) {
         const errorMsg: ChatMessage = {
