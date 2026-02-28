@@ -14,6 +14,8 @@ export default {
           "Roboto",
           "sans-serif",
         ],
+        heading: ["Cabinet Grotesk", "sans-serif"],
+        display: ["Clash Display", "sans-serif"],
       },
       colors: {
         primary: {

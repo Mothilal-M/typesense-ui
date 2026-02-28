@@ -228,6 +228,39 @@ html {
   display: inline-block;
 }
 
+/* Landing CSS additions */
+.landing-section {
+  position: relative;
+  width: 100%;
+}
+
+.text-gradient-neon {
+  background: linear-gradient(to right, #0cdcf7, #8d30ff, #ff4fba);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *,

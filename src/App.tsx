@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { AppProvider, useApp } from "./context/AppContext";
 import { ConnectionSetup } from "./components/ConnectionSetup";
 import { Header } from "./components/Header";
@@ -76,6 +76,13 @@ function DashboardContent() {
 
 function AiChat() {
   const [chatOpen, setChatOpen] = useState(false);
+  const location = useLocation();
+
+  // Hide the chat button on the landing page
+  if (location.pathname === "/") {
+    return null;
+  }
+
   return (
     <>
       <AiChatButton isOpen={chatOpen} onClick={() => setChatOpen(!chatOpen)} />
