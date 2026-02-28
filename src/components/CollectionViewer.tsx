@@ -22,6 +22,7 @@ import {
   GitCompare,
   MessageSquare,
   Code,
+  MoreHorizontal,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import type { Document, CollectionSchema } from "../types";
@@ -108,6 +109,19 @@ export function CollectionViewer() {
   const [showQueryDiff, setShowQueryDiff] = useState(false);
   const [showNLRules, setShowNLRules] = useState(false);
   const [showEmbeddableWidget, setShowEmbeddableWidget] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close "More" dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setShowMoreMenu(false);
+      }
+    };
+    if (showMoreMenu) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showMoreMenu]);
 
   // Column resize state
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
@@ -429,7 +443,7 @@ export function CollectionViewer() {
             </p>
           </div>
 
-          <div className="flex items-center flex-shrink-0 gap-2">
+          <div className="flex items-center flex-wrap gap-2">
             {/* New Document Button */}
             <Tooltip content="Create new document (Ctrl+N)" side="bottom">
               <button
@@ -463,60 +477,57 @@ export function CollectionViewer() {
               </button>
             </Tooltip>
 
-            {/* Synonyms Manager */}
-            <Tooltip content="Manage synonyms" side="bottom">
-              <button
-                onClick={() => setShowSynonyms(true)}
-                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span className="hidden xl:inline">Synonyms</span>
-              </button>
-            </Tooltip>
-
-            {/* Curations Editor */}
-            <Tooltip content="Curate search results" side="bottom">
-              <button
-                onClick={() => setShowCurations(true)}
-                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
-              >
-                <Star className="w-4 h-4" />
-                <span className="hidden xl:inline">Curations</span>
-              </button>
-            </Tooltip>
-
-            {/* Query Diff Tool */}
-            <Tooltip content="Compare two search queries" side="bottom">
-              <button
-                onClick={() => setShowQueryDiff(true)}
-                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
-              >
-                <GitCompare className="w-4 h-4" />
-                <span className="hidden xl:inline">Diff</span>
-              </button>
-            </Tooltip>
-
-            {/* NL Rules */}
-            <Tooltip content="AI natural language rules" side="bottom">
-              <button
-                onClick={() => setShowNLRules(true)}
-                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
-              >
-                <MessageSquare className="w-4 h-4" />
-                <span className="hidden xl:inline">NL Rules</span>
-              </button>
-            </Tooltip>
-
-            {/* Embeddable Widget */}
-            <Tooltip content="Generate search widget" side="bottom">
-              <button
-                onClick={() => setShowEmbeddableWidget(true)}
-                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
-              >
-                <Code className="w-4 h-4" />
-                <span className="hidden xl:inline">Widget</span>
-              </button>
-            </Tooltip>
+            {/* More tools dropdown */}
+            <div className="relative" ref={moreMenuRef}>
+              <Tooltip content="More tools" side="bottom">
+                <button
+                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                  <span className="hidden lg:inline">More</span>
+                </button>
+              </Tooltip>
+              {showMoreMenu && (
+                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-1.5 z-50 animate-fade-in">
+                  <button
+                    onClick={() => { setShowSynonyms(true); setShowMoreMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <BookOpen className="w-4 h-4 text-blue-500" />
+                    Synonyms
+                  </button>
+                  <button
+                    onClick={() => { setShowCurations(true); setShowMoreMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <Star className="w-4 h-4 text-amber-500" />
+                    Curations
+                  </button>
+                  <button
+                    onClick={() => { setShowQueryDiff(true); setShowMoreMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <GitCompare className="w-4 h-4 text-green-500" />
+                    Query Diff
+                  </button>
+                  <button
+                    onClick={() => { setShowNLRules(true); setShowMoreMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <MessageSquare className="w-4 h-4 text-purple-500" />
+                    NL Rules
+                  </button>
+                  <button
+                    onClick={() => { setShowEmbeddableWidget(true); setShowMoreMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <Code className="w-4 h-4 text-cyan-500" />
+                    Widget
+                  </button>
+                </div>
+              )}
+            </div>
 
             <Tooltip content={showFilters ? "Hide filters" : "Show filters"} side="bottom">
               <button
@@ -955,6 +966,13 @@ function VirtualTable({
 
   const fields = collection?.fields.filter((f) => visibleColumns.has(f.name)) ?? [];
 
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const topPad = virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const bottomPad =
+    virtualItems.length > 0
+      ? rowVirtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end
+      : 0;
+
   return (
     <table className="w-full" style={{ tableLayout: "fixed" }}>
       <colgroup>
@@ -994,24 +1012,18 @@ function VirtualTable({
           ))}
         </tr>
       </thead>
-      <tbody
-        className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm"
-        style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}
-      >
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+      <tbody className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm divide-y divide-gray-200/50 dark:divide-gray-700/50">
+        {topPad > 0 && (
+          <tr><td colSpan={fields.length + 1} style={{ height: topPad, padding: 0, border: 0 }} /></tr>
+        )}
+        {virtualItems.map((virtualRow) => {
           const doc = documents[virtualRow.index];
           return (
             <tr
               key={doc.id || virtualRow.index}
-              className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition-all duration-300 border-b border-gray-200/50 dark:border-gray-700/50"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
+              data-index={virtualRow.index}
+              ref={rowVirtualizer.measureElement}
+              className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition-all duration-300"
             >
               <td className="px-5 py-3" style={{ width: 144 }}>
                 <div className="flex items-center space-x-1 flex-nowrap">
@@ -1054,6 +1066,9 @@ function VirtualTable({
             </tr>
           );
         })}
+        {bottomPad > 0 && (
+          <tr><td colSpan={fields.length + 1} style={{ height: bottomPad, padding: 0, border: 0 }} /></tr>
+        )}
       </tbody>
     </table>
   );
