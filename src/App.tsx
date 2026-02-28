@@ -9,6 +9,8 @@ import { ToastContainer } from "./components/ui/Toast";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { AiChatButton } from "./components/ai/AiChatButton";
 import { AiChatPanel } from "./components/ai/AiChatPanel";
+import { CommandPalette } from "./components/ui/CommandPalette";
+import { ProfileManager } from "./components/ServerProfiles";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
@@ -27,16 +29,21 @@ function LoadingFallback() {
 }
 
 function DashboardContent() {
-  const { isConnected, refreshCollections } = useApp();
+  const { isConnected, config, setConfig, refreshCollections } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [profileManagerOpen, setProfileManagerOpen] = useState(false);
 
   // Keyboard shortcuts (only when connected)
   useKeyboardShortcuts({
-    onSearch: useCallback(() => window.dispatchEvent(new Event("focus-search")), []),
+    onSearch: useCallback(() => setCommandPaletteOpen(true), []),
     onNewDoc: useCallback(() => window.dispatchEvent(new Event("new-document")), []),
     onRefresh: useCallback(() => { refreshCollections(); }, [refreshCollections]),
     onToggleAI: useCallback(() => window.dispatchEvent(new Event("toggle-ai-chat")), []),
-    onEscape: useCallback(() => setSidebarOpen(false), []),
+    onEscape: useCallback(() => {
+      setCommandPaletteOpen(false);
+      setSidebarOpen(false);
+    }, []),
   });
 
   if (!isConnected) {
@@ -45,7 +52,11 @@ function DashboardContent() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <Header onToggleSidebar={() => setSidebarOpen((v) => !v)} sidebarOpen={sidebarOpen} />
+      <Header
+        onToggleSidebar={() => setSidebarOpen((v) => !v)}
+        sidebarOpen={sidebarOpen}
+        onManageProfiles={() => setProfileManagerOpen(true)}
+      />
       <div className="flex-1 flex overflow-hidden relative">
         {sidebarOpen && (
           <div
@@ -81,6 +92,20 @@ function DashboardContent() {
           <CollectionViewer />
         </main>
       </div>
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+      />
+
+      {/* Profile Manager */}
+      <ProfileManager
+        isOpen={profileManagerOpen}
+        onClose={() => setProfileManagerOpen(false)}
+        onConnect={setConfig}
+        currentConfig={config}
+      />
     </div>
   );
 }

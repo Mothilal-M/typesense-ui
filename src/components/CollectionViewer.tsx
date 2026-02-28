@@ -14,6 +14,9 @@ import {
   Pencil,
   Trash2,
   Sparkles,
+  Download,
+  Settings,
+  FlaskConical,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import type { Document } from "../types";
@@ -21,6 +24,10 @@ import { useCollectionDocuments } from "../hooks/useCollectionDocuments";
 import { DocumentEditor } from "./DocumentEditor";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Tooltip } from "./ui/Tooltip";
+import { JsonTreePanel } from "./ui/JsonTreeViewer";
+import { BulkImportExport } from "./BulkImportExport";
+import { SchemaEditor } from "./SchemaEditor";
+import { SearchPlayground } from "./SearchPlayground";
 import { typesenseService } from "../services/typesense";
 import { useToast } from "../hooks/useToast";
 import { fireSparkle } from "../lib/confetti";
@@ -83,6 +90,11 @@ export function CollectionViewer() {
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Feature modals
+  const [showImportExport, setShowImportExport] = useState(false);
+  const [showSchemaEditor, setShowSchemaEditor] = useState(false);
+  const [showSearchPlayground, setShowSearchPlayground] = useState(false);
 
   useEffect(() => {
     if (collection) {
@@ -288,9 +300,7 @@ export function CollectionViewer() {
                   </Tooltip>
                 </div>
                 <div className="p-4 sm:p-6 overflow-auto max-h-[calc(90vh-70px)] sm:max-h-[calc(80vh-80px)]">
-                  <pre className="text-xs sm:text-sm text-gray-900 dark:text-gray-50 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 p-4 sm:p-6 rounded-xl overflow-x-auto border border-gray-200/50 dark:border-slate-700/50 shadow-inner font-mono leading-relaxed">
-                    {JSON.stringify(selectedDocument, null, 2)}
-                  </pre>
+                  <JsonTreePanel data={selectedDocument} title="Document" />
                 </div>
               </div>
             </div>,
@@ -377,6 +387,39 @@ export function CollectionViewer() {
               >
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">New Document</span>
+              </button>
+            </Tooltip>
+
+            {/* Import/Export */}
+            <Tooltip content="Import / Export documents" side="bottom">
+              <button
+                onClick={() => setShowImportExport(true)}
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+              >
+                <Download className="w-4 h-4" />
+                <span className="hidden lg:inline">Import/Export</span>
+              </button>
+            </Tooltip>
+
+            {/* Search Playground */}
+            <Tooltip content="Visual search playground" side="bottom">
+              <button
+                onClick={() => setShowSearchPlayground(true)}
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+              >
+                <FlaskConical className="w-4 h-4" />
+                <span className="hidden lg:inline">Playground</span>
+              </button>
+            </Tooltip>
+
+            {/* Schema Editor */}
+            <Tooltip content="Edit collection schema" side="bottom">
+              <button
+                onClick={() => setShowSchemaEditor(true)}
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+              >
+                <Settings className="w-4 h-4" />
+                <span className="hidden lg:inline">Schema</span>
               </button>
             </Tooltip>
 
@@ -741,9 +784,7 @@ export function CollectionViewer() {
                 </Tooltip>
               </div>
               <div className="p-4 sm:p-6 overflow-auto max-h-[calc(90vh-70px)] sm:max-h-[calc(80vh-80px)]">
-                <pre className="text-xs sm:text-sm text-gray-900 dark:text-gray-50 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 p-4 sm:p-6 rounded-xl overflow-x-auto border border-gray-200/50 dark:border-slate-700/50 shadow-inner font-mono leading-relaxed">
-                  {JSON.stringify(selectedDocument, null, 2)}
-                </pre>
+                <JsonTreePanel data={selectedDocument} title="Document" />
               </div>
             </div>
           </div>,
@@ -773,6 +814,35 @@ export function CollectionViewer() {
         variant="danger"
         isLoading={isDeleting}
       />
+
+      {/* Bulk Import/Export Modal */}
+      {collection && (
+        <BulkImportExport
+          isOpen={showImportExport}
+          onClose={() => setShowImportExport(false)}
+          collectionName={collection.name}
+          onImported={refresh}
+        />
+      )}
+
+      {/* Schema Editor Modal */}
+      {collection && (
+        <SchemaEditor
+          isOpen={showSchemaEditor}
+          onClose={() => setShowSchemaEditor(false)}
+          collection={collection}
+          onUpdated={refresh}
+        />
+      )}
+
+      {/* Search Playground Modal */}
+      {collection && (
+        <SearchPlayground
+          isOpen={showSearchPlayground}
+          onClose={() => setShowSearchPlayground(false)}
+          collection={collection}
+        />
+      )}
     </div>
   );
 }

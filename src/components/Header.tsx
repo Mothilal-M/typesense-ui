@@ -4,16 +4,19 @@ import { ThemeToggle } from "./ui/ThemeToggle";
 import { Logo } from "./ui/Logo";
 import { useToast } from "../hooks/useToast";
 import { useConnectionHealth, type HealthStatus } from "../hooks/useConnectionHealth";
+import { ProfileSwitcher } from "./ServerProfiles";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
   sidebarOpen: boolean;
+  onManageProfiles?: () => void;
 }
 
-export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
+export function Header({ onToggleSidebar, sidebarOpen, onManageProfiles }: HeaderProps) {
   const {
     config,
     disconnect,
+    setConfig,
     theme,
     toggleTheme,
   } = useApp();
@@ -60,6 +63,13 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
 
             {/* Health indicator */}
             <HealthBadge status={status} latencyMs={latencyMs} />
+
+            {/* Server profile switcher */}
+            <ProfileSwitcher
+              currentConfig={config}
+              onSwitch={setConfig}
+              onManageProfiles={() => onManageProfiles?.()}
+            />
           </div>
 
           <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">

@@ -60,8 +60,13 @@ export default {
         "orb-drift-4": "orbDrift4 18s ease-in-out infinite",
         twinkle: "twinkle 2s ease-in-out infinite",
         "cloud-drift": "cloudDrift 6s ease-in-out infinite",
+        "slide-in-top": "slideInTop 0.2s ease-out",
       },
       keyframes: {
+        slideInTop: {
+          "0%": { opacity: "0", transform: "translateY(-20px) scale(0.98)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
         twinkle: {
           "0%, 100%": { opacity: "0.2", transform: "scale(1)" },
           "50%": { opacity: "1", transform: "scale(1.4)" },
