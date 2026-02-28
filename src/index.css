@@ -179,6 +179,55 @@ html {
   }
 }
 
+/* Section reveal transitions (Enhancement #3) */
+.section-reveal {
+  will-change: clip-path, opacity, filter;
+}
+
+/* Scroll progress glow (Enhancement #9) */
+.scroll-progress-track {
+  box-shadow: 0 0 8px rgba(141, 48, 255, 0.15);
+}
+.scroll-progress-fill {
+  box-shadow: 0 0 10px #8d30ff, 0 0 20px #0cdcf7, 0 0 4px #ff4fba;
+}
+
+/* How It Works glowing dot (Enhancement #5) */
+.hiw-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0cdcf7, #8d30ff);
+  box-shadow: 0 0 12px #0cdcf7, 0 0 24px #8d30ff, 0 0 6px #ff4fba;
+  position: absolute;
+  top: 20px;
+  z-index: 20;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* How It Works step glow overlay */
+.hiw-step-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* Feature horizontal scroll container (Enhancement #6) */
+@media (min-width: 1024px) {
+  .feature-scroll-container {
+    will-change: transform;
+  }
+}
+
+/* Navbar character animation (Enhancement #4) */
+.nav-brand-char {
+  display: inline-block;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *,

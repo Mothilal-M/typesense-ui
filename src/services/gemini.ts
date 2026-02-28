@@ -53,12 +53,19 @@ class GeminiService {
     const collectionSummaries = collections
       .map((c) => {
         const fieldsList = c.fields
+          .filter((f) => !f.type.startsWith("float") || !f.name.toLowerCase().includes("embedding"))
           .map(
             (f) =>
               `  - ${f.name} (${f.type}${f.optional ? ", optional" : ""}${f.facet ? ", facet" : ""})`
           )
           .join("\n");
-        return `Collection "${c.name}" (${c.num_documents} documents):\n${fieldsList}`;
+        const embeddingFields = c.fields.filter(
+          (f) => f.type.startsWith("float") && f.name.toLowerCase().includes("embedding")
+        );
+        const embeddingNote = embeddingFields.length > 0
+          ? `\n  [${embeddingFields.length} embedding field(s) hidden - not queryable]`
+          : "";
+        return `Collection "${c.name}" (${c.num_documents} documents):\n${fieldsList}${embeddingNote}`;
       })
       .join("\n\n");
 
@@ -86,16 +93,12 @@ ${selectedInfo}
 - Use q="*" with filter_by for exact matching without full-text search
 
 ## Response Guidelines
-- IMPORTANT: When you call search_documents, the results are AUTOMATICALLY displayed in a data table in the main UI. Do NOT list individual document fields/values in your text response. Instead, provide a brief summary like "Here are X documents from the Y collection" or "Found X matching documents."
-- When the user asks to "show data", "show collection data", or similar, ALWAYS use search_documents with q="*" to fetch the documents.
-- For get_document results, the document is also shown in a table automatically. Just confirm what was found briefly.
-- For list_collections results, the collections are shown in a table automatically. Just summarize the count.
-- For get_collection_schema results, the fields are shown in a table automatically. Just provide a brief overview.
-- For count queries, provide a direct numeric answer
-- If a query fails, explain what went wrong and suggest corrections
-- Be concise but helpful
-- When you search for documents, always include the relevant fields the user asked about
-- For write operations, confirm what you did after the action completes`;
+- CRITICAL: All function call results (search_documents, get_document, list_collections, get_collection_schema) are AUTOMATICALLY displayed as a data table in the main UI. Your text response must be a SHORT summary only (1-2 sentences max). NEVER list document data, field values, or record details in your text. Just say something like "Here are 25 documents from jds_v4" or "Found 10 matching results."
+- When the user asks to "show data", "show collection data", or similar, ALWAYS use search_documents with q="*".
+- For count queries, provide a direct numeric answer.
+- If a query fails, explain what went wrong and suggest corrections.
+- Be concise. Keep responses under 2 sentences when data is returned via function calls.
+- For write operations, confirm what you did after the action completes.`;
   }
 
   async sendMessage(
@@ -181,13 +184,42 @@ ${selectedInfo}
         iterations++;
       }
 
-      const text = result.text() || "";
+      const rawText = result.text() || "";
       const tableData = this.extractTableData(functionCalls);
+
+      // When table data exists, condense the AI text response.
+      // The data is shown in the main content area table, so the chat
+      // only needs a brief summary — not a verbose listing of fields/values.
+      const text = tableData ? this.condenseTextForTable(rawText, tableData) : rawText;
 
       return { text, tableData, functionCalls };
     } catch (err) {
       throw new Error(parseGeminiError(err));
     }
+  }
+
+  /**
+   * When table data is being displayed in the main UI, condense the AI's text
+   * response to just a brief summary. Gemini often lists all document data as
+   * text even when told not to — this ensures the chat stays clean.
+   */
+  private condenseTextForTable(rawText: string, tableData: TableResult): string {
+    // If the text is already short (under 200 chars), keep it as-is
+    if (rawText.length <= 200) return rawText;
+
+    // Extract just the first sentence or line as a summary
+    const firstLine = rawText.split("\n").find((line) => line.trim().length > 0) || "";
+    const firstSentence = firstLine.split(/[.!]\s/)[0];
+
+    // Build a concise summary
+    if (firstSentence && firstSentence.length <= 150) {
+      return firstSentence + ".";
+    }
+
+    // Fallback: generate our own summary
+    const { collectionName, rows, totalFound } = tableData;
+    const count = totalFound ?? rows.length;
+    return `Found ${count} result${count !== 1 ? "s" : ""} from **${collectionName}**.`;
   }
 
   private extractTableData(

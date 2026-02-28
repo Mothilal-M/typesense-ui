@@ -174,6 +174,36 @@ export const typesenseToolDeclarations: FunctionDeclaration[] = [
   },
 ];
 
+/**
+ * Detects if a value is a vector/embedding field (large numeric array).
+ * These fields are stripped before sending to Gemini to avoid token limit issues.
+ */
+function isEmbeddingValue(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.length > 10 &&
+    typeof value[0] === "number"
+  );
+}
+
+/**
+ * Strips embedding/vector fields from a document to keep payloads small.
+ * Embeddings are large float arrays that are meaningless to the AI and blow
+ * past Gemini's token limit.
+ */
+function stripEmbeddingFields(doc: Record<string, unknown>): Record<string, unknown> {
+  const cleaned: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(doc)) {
+    if (isEmbeddingValue(value)) {
+      // Replace with a placeholder so the AI knows the field exists
+      cleaned[key] = `[embedding: ${(value as number[]).length} dimensions]`;
+    } else {
+      cleaned[key] = value;
+    }
+  }
+  return cleaned;
+}
+
 export async function executeFunctionCall(
   name: string,
   args: Record<string, unknown>
@@ -201,15 +231,19 @@ export async function executeFunctionCall(
         found: response.found,
         page: response.page,
         search_time_ms: response.search_time_ms,
-        documents: response.hits.map((h) => h.document),
+        documents: response.hits.map((h) =>
+          stripEmbeddingFields(h.document as Record<string, unknown>)
+        ),
       };
     }
 
-    case "get_document":
-      return await typesenseService.getDocument(
+    case "get_document": {
+      const doc = await typesenseService.getDocument(
         args.collection_name as string,
         args.document_id as string
       );
+      return stripEmbeddingFields(doc as Record<string, unknown>);
+    }
 
     case "count_documents": {
       const col = await typesenseService.getCollection(
