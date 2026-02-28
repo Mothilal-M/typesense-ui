@@ -2,6 +2,7 @@ import { LogOut, Menu, X } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { ThemeToggle } from "./ui/ThemeToggle";
 import { Logo } from "./ui/Logo";
+import { useToast } from "../hooks/useToast";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -15,6 +16,12 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
     theme,
     toggleTheme,
   } = useApp();
+  const { addToast } = useToast();
+
+  const handleDisconnect = () => {
+    disconnect();
+    addToast("info", "Disconnected from Typesense");
+  };
 
   return (
     <header className="sticky top-0 z-20 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700/80 shadow-sm">
@@ -54,7 +61,7 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
             <ThemeToggle isDark={theme === "dark"} onToggle={toggleTheme} />
 
             <button
-              onClick={disconnect}
+              onClick={handleDisconnect}
               className="flex items-center space-x-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 border border-transparent hover:border-red-200 dark:hover:border-red-800/50"
             >
               <LogOut className="w-4 h-4" />

@@ -1,29 +1,37 @@
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from "lucide-react";
 import { useToast } from "../../hooks/useToast";
 import type { Toast as ToastType } from "../../hooks/useToast";
 
-const iconMap = {
-  success: CheckCircle,
-  error: AlertCircle,
-  info: Info,
-  warning: AlertTriangle,
-};
-
-const styleMap = {
-  success:
-    "bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-300 dark:border-green-700 text-green-800 dark:text-green-200",
-  error:
-    "bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border-red-300 dark:border-red-700 text-red-800 dark:text-red-200",
-  info: "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-blue-300 dark:border-blue-700 text-blue-800 dark:text-blue-200",
-  warning:
-    "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200",
-};
-
-const iconColorMap = {
-  success: "text-green-600 dark:text-green-400",
-  error: "text-red-600 dark:text-red-400",
-  info: "text-blue-600 dark:text-blue-400",
-  warning: "text-yellow-600 dark:text-yellow-400",
+const config = {
+  success: {
+    icon: CheckCircle2,
+    bar: "bg-emerald-500",
+    iconColor: "text-emerald-500 dark:text-emerald-400",
+    bg: "bg-white dark:bg-slate-900",
+    border: "border-l-4 border-l-emerald-500",
+  },
+  error: {
+    icon: AlertCircle,
+    bar: "bg-red-500",
+    iconColor: "text-red-500 dark:text-red-400",
+    bg: "bg-white dark:bg-slate-900",
+    border: "border-l-4 border-l-red-500",
+  },
+  info: {
+    icon: Info,
+    bar: "bg-blue-500",
+    iconColor: "text-blue-500 dark:text-blue-400",
+    bg: "bg-white dark:bg-slate-900",
+    border: "border-l-4 border-l-blue-500",
+  },
+  warning: {
+    icon: AlertTriangle,
+    bar: "bg-amber-500",
+    iconColor: "text-amber-500 dark:text-amber-400",
+    bg: "bg-white dark:bg-slate-900",
+    border: "border-l-4 border-l-amber-500",
+  },
 };
 
 function ToastItem({
@@ -33,20 +41,51 @@ function ToastItem({
   toast: ToastType;
   onDismiss: (id: string) => void;
 }) {
-  const Icon = iconMap[toast.type];
+  const [visible, setVisible] = useState(false);
+  const c = config[toast.type];
+  const Icon = c.icon;
+
+  useEffect(() => {
+    requestAnimationFrame(() => setVisible(true));
+  }, []);
+
+  const handleDismiss = () => {
+    setVisible(false);
+    setTimeout(() => onDismiss(toast.id), 200);
+  };
 
   return (
     <div
-      className={`flex items-center space-x-3 px-4 py-3 rounded-xl border shadow-lg backdrop-blur-sm animate-fade-in ${styleMap[toast.type]}`}
+      className={`relative overflow-hidden rounded-lg shadow-lg ${c.bg} ${c.border} ring-1 ring-black/5 dark:ring-white/5 transition-all duration-200 ${
+        visible
+          ? "translate-x-0 opacity-100"
+          : "translate-x-8 opacity-0"
+      }`}
     >
-      <Icon className={`w-5 h-5 flex-shrink-0 ${iconColorMap[toast.type]}`} />
-      <p className="text-sm font-medium flex-1">{toast.message}</p>
-      <button
-        onClick={() => onDismiss(toast.id)}
-        className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
-      >
-        <X className="w-4 h-4" />
-      </button>
+      <div className="flex items-start gap-3 px-4 py-3">
+        <Icon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${c.iconColor}`} />
+        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 flex-1 leading-snug">
+          {toast.message}
+        </p>
+        <button
+          onClick={handleDismiss}
+          className="p-0.5 rounded hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0"
+        >
+          <X className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+        </button>
+      </div>
+
+      {/* Progress bar */}
+      {toast.duration && toast.duration > 0 && (
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-100 dark:bg-slate-800">
+          <div
+            className={`h-full ${c.bar} rounded-full`}
+            style={{
+              animation: `toast-progress ${toast.duration}ms linear forwards`,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -57,7 +96,7 @@ export function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-[100] flex flex-col space-y-2 max-w-sm">
+    <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 w-[380px] max-w-[calc(100vw-2rem)]">
       {toasts.map((toast) => (
         <ToastItem key={toast.id} toast={toast} onDismiss={removeToast} />
       ))}

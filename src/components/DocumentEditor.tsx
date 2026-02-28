@@ -4,6 +4,7 @@ import { Modal } from "./ui/Modal";
 import { JsonEditor } from "./ui/JsonEditor";
 import { typesenseService } from "../services/typesense";
 import { useToast } from "../hooks/useToast";
+import { fireSparkle } from "../lib/confetti";
 import type { Document, Field } from "../types";
 
 interface DocumentEditorProps {
@@ -108,9 +109,11 @@ export function DocumentEditor({
           updateData
         );
         addToast("success", "Document updated successfully");
+        fireSparkle();
       } else {
         await typesenseService.createDocument(collectionName, parsed);
         addToast("success", "Document created successfully");
+        fireSparkle();
       }
       onSaved();
       onClose();
