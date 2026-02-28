@@ -61,8 +61,9 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
     <div className="h-full flex flex-col bg-gradient-to-b from-white/50 to-gray-50/50 dark:from-slate-900/50 dark:to-slate-950/50">
       <div className="p-5 border-b border-gray-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
-            Collections ({collections.length})
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            Collections
+            <span className="ml-1.5 text-gray-400 dark:text-gray-500">({collections.length})</span>
           </h2>
           <div className="flex items-center space-x-1.5">
             <Tooltip content="Refresh collections" side="bottom">

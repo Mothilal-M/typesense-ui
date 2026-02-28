@@ -136,7 +136,7 @@ export function CollectionViewer() {
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
+                <h2 className="text-lg sm:text-2xl font-semibold text-gray-900 dark:text-white">
                   AI Results
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
@@ -233,8 +233,8 @@ export function CollectionViewer() {
                 className="bg-white dark:bg-slate-900 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] sm:max-h-[80vh] overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="p-4 sm:p-5 border-b border-gray-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30 rounded-t-2xl">
-                  <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between bg-gray-50 dark:bg-slate-800/80 rounded-t-2xl">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                     Document JSON
                   </h3>
                   <Tooltip content="Close" side="left">
@@ -266,7 +266,7 @@ export function CollectionViewer() {
           <div className="inline-block p-6 rounded-3xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 mb-6 shadow-xl">
             <Search className="w-16 h-16 text-blue-600 dark:text-blue-400" />
           </div>
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+          <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
             No Collection Selected
           </h3>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
@@ -304,7 +304,7 @@ export function CollectionViewer() {
           <div className="animate-fade-in min-w-0 flex-1 overflow-hidden">
             <Tooltip content={collection?.name} side="bottom">
               <h2
-                className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent truncate block"
+                className="text-lg sm:text-2xl font-semibold text-gray-900 dark:text-white truncate block"
               >
                 {collection?.name}
               </h2>
@@ -649,7 +649,7 @@ export function CollectionViewer() {
                 </button>
               </Tooltip>
 
-              <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent px-2 sm:px-3 whitespace-nowrap">
+              <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 px-2 sm:px-3 whitespace-nowrap">
                 {currentPage} / {totalPages}
               </span>
 
@@ -680,8 +680,8 @@ export function CollectionViewer() {
               className="bg-white dark:bg-slate-900 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] sm:max-h-[80vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4 sm:p-5 border-b border-gray-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-t-2xl">
-                <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between bg-gray-50 dark:bg-slate-800/80 rounded-t-2xl">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                   Document JSON
                 </h3>
                 <Tooltip content="Close" side="left">
