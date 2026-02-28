@@ -1,4 +1,4 @@
-import { Database, LogOut, RefreshCw, Menu, X } from "lucide-react";
+import { Database, LogOut, Menu, X } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { ThemeToggle } from "./ui/ThemeToggle";
 
@@ -13,8 +13,6 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
     disconnect,
     theme,
     toggleTheme,
-    refreshCollections,
-    isLoading,
   } = useApp();
 
   return (
@@ -51,19 +49,6 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
           </div>
 
           <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
-            <button
-              onClick={refreshCollections}
-              disabled={isLoading}
-              className="p-2 sm:p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-slate-800 dark:hover:to-slate-700 transition-all duration-300 disabled:opacity-50 border border-transparent hover:border-blue-200 dark:hover:border-slate-600"
-              title="Refresh collections"
-            >
-              <RefreshCw
-                className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-200 transition-transform duration-300 ${
-                  isLoading ? "animate-spin" : ""
-                }`}
-              />
-            </button>
-
             <ThemeToggle isDark={theme === "dark"} onToggle={toggleTheme} />
 
             <button

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Database, Trash2, Eye, Search, X, Plus } from "lucide-react";
+import { Database, Trash2, Eye, Search, X, Plus, RefreshCw } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { typesenseService } from "../services/typesense";
 import { CollectionCreator } from "./CollectionCreator";
@@ -16,6 +16,7 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
     selectedCollection,
     setSelectedCollection,
     refreshCollections,
+    isLoading,
   } = useApp();
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingCollection, setDeletingCollection] = useState<string | null>(
@@ -63,14 +64,27 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
           <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
             Collections ({collections.length})
           </h2>
-          <Tooltip content="Create new collection" side="bottom">
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="p-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </Tooltip>
+          <div className="flex items-center space-x-1.5">
+            <Tooltip content="Refresh collections" side="bottom">
+              <button
+                onClick={refreshCollections}
+                disabled={isLoading}
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-300 disabled:opacity-50"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 text-gray-600 dark:text-gray-300 ${isLoading ? "animate-spin" : ""}`}
+                />
+              </button>
+            </Tooltip>
+            <Tooltip content="Create new collection" side="bottom">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="p-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </Tooltip>
+          </div>
         </div>
 
         <div className="relative group">
