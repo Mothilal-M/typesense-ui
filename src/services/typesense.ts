@@ -6,6 +6,9 @@ import type {
   Document,
   SearchParams,
   SearchResponse,
+  SynonymSchema,
+  OverrideSchema,
+  ApiKeySchema,
 } from "../types";
 
 class TypesenseService {
@@ -266,6 +269,108 @@ class TypesenseService {
       return response as unknown as string;
     } catch (error) {
       console.error("Error exporting documents:", error);
+      throw error;
+    }
+  }
+
+  // ─── Synonyms ──────────────────────────────────────────────────
+
+  async getSynonyms(collectionName: string): Promise<SynonymSchema[]> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.collections(collectionName).synonyms().retrieve();
+      return (res as any).synonyms ?? [];
+    } catch (error) {
+      console.error("Error fetching synonyms:", error);
+      throw error;
+    }
+  }
+
+  async upsertSynonym(collectionName: string, id: string, body: Omit<SynonymSchema, "id">): Promise<SynonymSchema> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.collections(collectionName).synonyms().upsert(id, body as any);
+      return res as unknown as SynonymSchema;
+    } catch (error) {
+      console.error("Error upserting synonym:", error);
+      throw error;
+    }
+  }
+
+  async deleteSynonym(collectionName: string, id: string): Promise<void> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      await this.client.collections(collectionName).synonyms(id).delete();
+    } catch (error) {
+      console.error("Error deleting synonym:", error);
+      throw error;
+    }
+  }
+
+  // ─── Overrides / Curations ─────────────────────────────────────
+
+  async getOverrides(collectionName: string): Promise<OverrideSchema[]> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.collections(collectionName).overrides().retrieve();
+      return (res as any).overrides ?? [];
+    } catch (error) {
+      console.error("Error fetching overrides:", error);
+      throw error;
+    }
+  }
+
+  async upsertOverride(collectionName: string, id: string, body: Omit<OverrideSchema, "id">): Promise<OverrideSchema> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.collections(collectionName).overrides().upsert(id, body as any);
+      return res as unknown as OverrideSchema;
+    } catch (error) {
+      console.error("Error upserting override:", error);
+      throw error;
+    }
+  }
+
+  async deleteOverride(collectionName: string, id: string): Promise<void> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      await this.client.collections(collectionName).overrides(id).delete();
+    } catch (error) {
+      console.error("Error deleting override:", error);
+      throw error;
+    }
+  }
+
+  // ─── API Keys ──────────────────────────────────────────────────
+
+  async getApiKeys(): Promise<ApiKeySchema[]> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.keys().retrieve();
+      return (res as any).keys ?? [];
+    } catch (error) {
+      console.error("Error fetching API keys:", error);
+      throw error;
+    }
+  }
+
+  async createApiKey(body: Omit<ApiKeySchema, "id" | "value">): Promise<ApiKeySchema> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.keys().create(body as any);
+      return res as unknown as ApiKeySchema;
+    } catch (error) {
+      console.error("Error creating API key:", error);
+      throw error;
+    }
+  }
+
+  async deleteApiKey(id: number): Promise<void> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      await this.client.keys(id).delete();
+    } catch (error) {
+      console.error("Error deleting API key:", error);
       throw error;
     }
   }
