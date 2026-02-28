@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Database, Trash2, Eye, Search, X, Plus, RefreshCw } from "lucide-react";
+
+import { useState, useRef, useEffect } from "react";
+import { Database, Trash2, Settings, Search, X, Plus, RefreshCw, Pencil, Eye } from "lucide-react";
+import { SchemaEditor } from "./SchemaEditor";
 import { useApp } from "../context/AppContext";
 import { typesenseService } from "../services/typesense";
 import { CollectionCreator } from "./CollectionCreator";
@@ -26,7 +28,25 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
     null
   );
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState<string | null>(null);
+  const [schemaCollection, setSchemaCollection] = useState<string | null>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
   const { addToast } = useToast();
+
+  // Close settings dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setSettingsOpen(null);
+      }
+    };
+    if (settingsOpen) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [settingsOpen]);
+
+  const schemaCollectionData = schemaCollection
+    ? collections.find((c) => c.name === schemaCollection) ?? null
+    : null;
 
   const filteredCollections = collections.filter((col) =>
     col.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -202,17 +222,45 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
                     </div>
                   ) : (
                     <>
-                      <Tooltip content="View documents" side="top">
-                        <button
-                          onClick={() => {
-                            setSelectedCollection(collection.name);
-                            onCollectionSelect?.();
-                          }}
-                          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/30 dark:hover:to-purple-950/30 transition-all duration-300 group"
-                        >
-                          <Eye className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                        </button>
-                      </Tooltip>
+                      <div className="relative" ref={settingsOpen === collection.name ? settingsRef : undefined}>
+                        <Tooltip content="Collection settings" side="top">
+                          <button
+                            onClick={() =>
+                              setSettingsOpen(
+                                settingsOpen === collection.name ? null : collection.name
+                              )
+                            }
+                            className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/30 dark:hover:to-purple-950/30 transition-all duration-300 group"
+                          >
+                            <Settings className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                          </button>
+                        </Tooltip>
+                        {settingsOpen === collection.name && (
+                          <div className="absolute right-0 mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-1.5 z-50 animate-fade-in">
+                            <button
+                              onClick={() => {
+                                setSelectedCollection(collection.name);
+                                onCollectionSelect?.();
+                                setSettingsOpen(null);
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                            >
+                              <Eye className="w-4 h-4 text-blue-500" />
+                              View Documents
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSchemaCollection(collection.name);
+                                setSettingsOpen(null);
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                            >
+                              <Pencil className="w-4 h-4 text-purple-500" />
+                              Edit Schema
+                            </button>
+                          </div>
+                        )}
+                      </div>
                       <Tooltip content="Delete collection" side="top">
                         <button
                           onClick={() => setShowDeleteConfirm(collection.name)}
@@ -260,6 +308,16 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
         onClose={() => setShowCreateModal(false)}
         onCreated={handleCollectionCreated}
       />
+
+      {/* Schema Editor Modal */}
+      {schemaCollectionData && (
+        <SchemaEditor
+          isOpen={!!schemaCollection}
+          onClose={() => setSchemaCollection(null)}
+          collection={schemaCollectionData}
+          onUpdated={refreshCollections}
+        />
+      )}
     </div>
   );
 }

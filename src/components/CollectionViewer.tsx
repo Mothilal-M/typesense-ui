@@ -16,7 +16,6 @@ import {
   Trash2,
   Sparkles,
   Download,
-  Settings,
   FlaskConical,
   BookOpen,
   Star,
@@ -32,7 +31,6 @@ import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Tooltip } from "./ui/Tooltip";
 import { JsonTreePanel } from "./ui/JsonTreeViewer";
 import { BulkImportExport } from "./BulkImportExport";
-import { SchemaEditor } from "./SchemaEditor";
 import { SearchPlayground } from "./SearchPlayground";
 import { SynonymsManager } from "./SynonymsManager";
 import { CurationsEditor } from "./CurationsEditor";
@@ -104,7 +102,6 @@ export function CollectionViewer() {
 
   // Feature modals
   const [showImportExport, setShowImportExport] = useState(false);
-  const [showSchemaEditor, setShowSchemaEditor] = useState(false);
   const [showSearchPlayground, setShowSearchPlayground] = useState(false);
   const [showSynonyms, setShowSynonyms] = useState(false);
   const [showCurations, setShowCurations] = useState(false);
@@ -463,17 +460,6 @@ export function CollectionViewer() {
               >
                 <FlaskConical className="w-4 h-4" />
                 <span className="hidden lg:inline">Playground</span>
-              </button>
-            </Tooltip>
-
-            {/* Schema Editor */}
-            <Tooltip content="Edit collection schema" side="bottom">
-              <button
-                onClick={() => setShowSchemaEditor(true)}
-                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
-              >
-                <Settings className="w-4 h-4" />
-                <span className="hidden lg:inline">Schema</span>
               </button>
             </Tooltip>
 
@@ -866,16 +852,6 @@ export function CollectionViewer() {
           onClose={() => setShowImportExport(false)}
           collectionName={collection.name}
           onImported={refresh}
-        />
-      )}
-
-      {/* Schema Editor Modal */}
-      {collection && (
-        <SchemaEditor
-          isOpen={showSchemaEditor}
-          onClose={() => setShowSchemaEditor(false)}
-          collection={collection}
-          onUpdated={refresh}
         />
       )}
 
