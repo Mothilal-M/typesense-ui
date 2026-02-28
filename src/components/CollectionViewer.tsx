@@ -17,6 +17,11 @@ import {
   Download,
   Settings,
   FlaskConical,
+  BookOpen,
+  Star,
+  GitCompare,
+  MessageSquare,
+  Code,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import type { Document } from "../types";
@@ -28,6 +33,11 @@ import { JsonTreePanel } from "./ui/JsonTreeViewer";
 import { BulkImportExport } from "./BulkImportExport";
 import { SchemaEditor } from "./SchemaEditor";
 import { SearchPlayground } from "./SearchPlayground";
+import { SynonymsManager } from "./SynonymsManager";
+import { CurationsEditor } from "./CurationsEditor";
+import { QueryDiffTool } from "./QueryDiffTool";
+import { NaturalLanguageRules } from "./NaturalLanguageRules";
+import { EmbeddableSearchWidget } from "./EmbeddableSearchWidget";
 import { typesenseService } from "../services/typesense";
 import { useToast } from "../hooks/useToast";
 import { fireSparkle } from "../lib/confetti";
@@ -95,6 +105,11 @@ export function CollectionViewer() {
   const [showImportExport, setShowImportExport] = useState(false);
   const [showSchemaEditor, setShowSchemaEditor] = useState(false);
   const [showSearchPlayground, setShowSearchPlayground] = useState(false);
+  const [showSynonyms, setShowSynonyms] = useState(false);
+  const [showCurations, setShowCurations] = useState(false);
+  const [showQueryDiff, setShowQueryDiff] = useState(false);
+  const [showNLRules, setShowNLRules] = useState(false);
+  const [showEmbeddableWidget, setShowEmbeddableWidget] = useState(false);
 
   useEffect(() => {
     if (collection) {
@@ -420,6 +435,61 @@ export function CollectionViewer() {
               >
                 <Settings className="w-4 h-4" />
                 <span className="hidden lg:inline">Schema</span>
+              </button>
+            </Tooltip>
+
+            {/* Synonyms Manager */}
+            <Tooltip content="Manage synonyms" side="bottom">
+              <button
+                onClick={() => setShowSynonyms(true)}
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden xl:inline">Synonyms</span>
+              </button>
+            </Tooltip>
+
+            {/* Curations Editor */}
+            <Tooltip content="Curate search results" side="bottom">
+              <button
+                onClick={() => setShowCurations(true)}
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+              >
+                <Star className="w-4 h-4" />
+                <span className="hidden xl:inline">Curations</span>
+              </button>
+            </Tooltip>
+
+            {/* Query Diff Tool */}
+            <Tooltip content="Compare two search queries" side="bottom">
+              <button
+                onClick={() => setShowQueryDiff(true)}
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+              >
+                <GitCompare className="w-4 h-4" />
+                <span className="hidden xl:inline">Diff</span>
+              </button>
+            </Tooltip>
+
+            {/* NL Rules */}
+            <Tooltip content="AI natural language rules" side="bottom">
+              <button
+                onClick={() => setShowNLRules(true)}
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span className="hidden xl:inline">NL Rules</span>
+              </button>
+            </Tooltip>
+
+            {/* Embeddable Widget */}
+            <Tooltip content="Generate search widget" side="bottom">
+              <button
+                onClick={() => setShowEmbeddableWidget(true)}
+                className="btn-secondary flex items-center space-x-1 sm:space-x-2"
+              >
+                <Code className="w-4 h-4" />
+                <span className="hidden xl:inline">Widget</span>
               </button>
             </Tooltip>
 
@@ -840,6 +910,51 @@ export function CollectionViewer() {
         <SearchPlayground
           isOpen={showSearchPlayground}
           onClose={() => setShowSearchPlayground(false)}
+          collection={collection}
+        />
+      )}
+
+      {/* Synonyms Manager Modal */}
+      {collection && (
+        <SynonymsManager
+          isOpen={showSynonyms}
+          onClose={() => setShowSynonyms(false)}
+          collectionName={collection.name}
+        />
+      )}
+
+      {/* Curations Editor Modal */}
+      {collection && (
+        <CurationsEditor
+          isOpen={showCurations}
+          onClose={() => setShowCurations(false)}
+          collectionName={collection.name}
+        />
+      )}
+
+      {/* Query Diff Tool Modal */}
+      {collection && (
+        <QueryDiffTool
+          isOpen={showQueryDiff}
+          onClose={() => setShowQueryDiff(false)}
+          collection={collection}
+        />
+      )}
+
+      {/* Natural Language Rules Modal */}
+      {collection && (
+        <NaturalLanguageRules
+          isOpen={showNLRules}
+          onClose={() => setShowNLRules(false)}
+          collection={collection}
+        />
+      )}
+
+      {/* Embeddable Search Widget Modal */}
+      {collection && (
+        <EmbeddableSearchWidget
+          isOpen={showEmbeddableWidget}
+          onClose={() => setShowEmbeddableWidget(false)}
           collection={collection}
         />
       )}

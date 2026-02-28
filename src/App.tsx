@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useCallback, useEffect } from "react";
+import { useState, lazy, Suspense, useCallback, useEffect, useMemo } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AppProvider, useApp } from "./context/AppContext";
 import { ConnectionSetup } from "./components/ConnectionSetup";
@@ -9,9 +9,25 @@ import { ToastContainer } from "./components/ui/Toast";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { AiChatButton } from "./components/ai/AiChatButton";
 import { AiChatPanel } from "./components/ai/AiChatPanel";
-import { CommandPalette } from "./components/ui/CommandPalette";
+import { CommandPalette, type CommandItem } from "./components/ui/CommandPalette";
 import { ProfileManager } from "./components/ServerProfiles";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
+import { ApiKeysManager } from "./components/ApiKeysManager";
+import { SearchAnalytics } from "./components/SearchAnalytics";
+import { AiSchemaGenerator } from "./components/AiSchemaGenerator";
+import { VisualPipelineBuilder } from "./components/VisualPipelineBuilder";
+import { SchemaMigrationTool } from "./components/SchemaMigrationTool";
+import { Collaboration } from "./components/Collaboration";
+import { PluginSystem } from "./components/PluginSystem";
+import {
+  Key,
+  BarChart3,
+  Wand2,
+  Workflow,
+  GitCompare,
+  Share2,
+  Puzzle,
+} from "lucide-react";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 
@@ -33,6 +49,26 @@ function DashboardContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [profileManagerOpen, setProfileManagerOpen] = useState(false);
+
+  // Global feature modals
+  const [showApiKeys, setShowApiKeys] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showAiSchema, setShowAiSchema] = useState(false);
+  const [showPipeline, setShowPipeline] = useState(false);
+  const [showMigration, setShowMigration] = useState(false);
+  const [showCollaboration, setShowCollaboration] = useState(false);
+  const [showPlugins, setShowPlugins] = useState(false);
+
+  // Extra commands for the command palette
+  const extraCommands = useMemo<CommandItem[]>(() => [
+    { id: "api-keys", label: "API Keys Manager", description: "Create and manage scoped API keys", icon: <Key className="w-4 h-4" />, category: "action", action: () => { setShowApiKeys(true); setCommandPaletteOpen(false); }, keywords: ["api", "keys", "auth", "token"] },
+    { id: "analytics", label: "Search Analytics", description: "View search analytics dashboard", icon: <BarChart3 className="w-4 h-4" />, category: "action", action: () => { setShowAnalytics(true); setCommandPaletteOpen(false); }, keywords: ["analytics", "stats", "metrics", "dashboard"] },
+    { id: "ai-schema", label: "AI Schema Generator", description: "Generate schemas from sample data using AI", icon: <Wand2 className="w-4 h-4" />, category: "action", action: () => { setShowAiSchema(true); setCommandPaletteOpen(false); }, keywords: ["ai", "schema", "generate", "create"] },
+    { id: "pipeline", label: "Visual Pipeline Builder", description: "Build import/transform/search workflows", icon: <Workflow className="w-4 h-4" />, category: "action", action: () => { setShowPipeline(true); setCommandPaletteOpen(false); }, keywords: ["pipeline", "workflow", "import", "transform"] },
+    { id: "migration", label: "Schema Migration Tool", description: "Compare and migrate schemas across servers", icon: <GitCompare className="w-4 h-4" />, category: "action", action: () => { setShowMigration(true); setCommandPaletteOpen(false); }, keywords: ["migration", "schema", "diff", "compare", "remote"] },
+    { id: "collaboration", label: "Collaboration", description: "Share links and view audit log", icon: <Share2 className="w-4 h-4" />, category: "action", action: () => { setShowCollaboration(true); setCommandPaletteOpen(false); }, keywords: ["share", "collaborate", "audit", "link", "team"] },
+    { id: "plugins", label: "Plugin System", description: "Manage and create custom plugins", icon: <Puzzle className="w-4 h-4" />, category: "action", action: () => { setShowPlugins(true); setCommandPaletteOpen(false); }, keywords: ["plugin", "extension", "hook", "custom"] },
+  ], []);
 
   // Keyboard shortcuts (only when connected)
   useKeyboardShortcuts({
@@ -97,6 +133,7 @@ function DashboardContent() {
       <CommandPalette
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
+        extraCommands={extraCommands}
       />
 
       {/* Profile Manager */}
@@ -106,6 +143,15 @@ function DashboardContent() {
         onConnect={setConfig}
         currentConfig={config}
       />
+
+      {/* Global Feature Modals */}
+      <ApiKeysManager isOpen={showApiKeys} onClose={() => setShowApiKeys(false)} />
+      <SearchAnalytics isOpen={showAnalytics} onClose={() => setShowAnalytics(false)} />
+      <AiSchemaGenerator isOpen={showAiSchema} onClose={() => setShowAiSchema(false)} />
+      <VisualPipelineBuilder isOpen={showPipeline} onClose={() => setShowPipeline(false)} />
+      <SchemaMigrationTool isOpen={showMigration} onClose={() => setShowMigration(false)} />
+      <Collaboration isOpen={showCollaboration} onClose={() => setShowCollaboration(false)} />
+      <PluginSystem isOpen={showPlugins} onClose={() => setShowPlugins(false)} />
     </div>
   );
 }

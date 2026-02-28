@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { typesenseService } from "../services/typesense";
 import { useDebounce } from "./useDebounce";
+import { trackSearch } from "../components/SearchAnalytics";
 import type {
   CollectionSchema,
   Document,
@@ -93,6 +94,9 @@ export function useCollectionDocuments(selectedCollection: string | null) {
 
       setSearchResponse(response);
       setDocuments(response.hits.map((hit) => hit.document));
+
+      // Track search for analytics
+      trackSearch(searchQuery || "*", collection.name, response.found, response.search_time_ms ?? 0);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to search documents"
