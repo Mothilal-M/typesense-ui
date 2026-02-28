@@ -1,210 +1,224 @@
-# Typesense UI
+<p align="center">
+  <img src="https://typesense.org/docs/images/typesense_logo.svg" alt="Typesense" width="200" />
+</p>
 
-A fully interactive, modern web application for managing and exploring Typesense data. Built with React, TypeScript, Vite, and Tailwind CSS.
+<h1 align="center">Typesense UI</h1>
 
-![Typesense UI](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+<p align="center">
+  A powerful, AI-enhanced dashboard for managing Typesense clusters.<br/>
+  Zero-install CLI &bull; Natural language queries &bull; Encrypted credentials
+</p>
+
+<p align="center">
+  <a href="https://typesense.mothilal.dev"><strong>Live Demo &rarr; typesense.mothilal.dev</strong></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/npm/v/typesense-ui?color=blue&style=flat-square" alt="npm version" />
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/React_18-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React 18" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+</p>
+
+---
+
+## Quick Start
+
+```bash
+npx typesense-ui
+```
+
+That's it. Opens the full dashboard at `http://localhost:3000`. No install needed.
+
+> Custom port: `npx typesense-ui --port=4000`
+
+### Local Development
+
+```bash
+git clone https://github.com/Mothilal-hire10x/typesense-ui.git
+cd typesense-ui
+npm install
+npm run dev
+```
+
+---
 
 ## Features
 
-### 🔌 Connection Management
+### Connection & Security
 
-- **Setup Screen**: Enter your Typesense server details (API Key, Host, Port, Protocol, Timeout)
-- **Connection Status**: Real-time connection status indicator
-- **Secure Storage**: Connection details saved securely in browser localStorage
-- **Easy Disconnect**: Quick disconnect with single click
+- **Encrypted credential storage** — Typesense API keys and Gemini keys are AES-GCM encrypted in localStorage using the Web Crypto API (PBKDF2 key derivation, 100k iterations)
+- **Server profiles** — save, name, and color-code multiple server connections; quick-switch from the header
+- **Connection health monitor** — periodic pings display healthy / degraded / down status with latency
 
-### 📊 Collections Management
+### Collection Management
 
-- **Collections List**: View all available collections with document counts
-- **Search Collections**: Quick search/filter through collections
-- **Quick Actions**: View, Schema inspection, and Delete operations
-- **Visual Feedback**: Selected collection highlighting and status indicators
+- Sidebar lists all collections with live document counts and search filtering
+- **Collection creator** — visual form with all 17 Typesense field types, per-field toggles (facet, sort, index, optional), default sorting field
+- **Schema editor** — add/drop/modify fields on existing collections with color-coded type badges
+- **AI schema generator** — paste sample JSON data and let Gemini infer the optimal Typesense schema
+- **Schema migration tool** — connect to a remote Typesense instance, diff schemas field-by-field, see added/removed/changed properties
 
-### 🔍 Advanced Document Viewer
+### Document Viewer
 
-- **Paginated Table**: Clean, responsive table view with customizable page sizes
-- **Live Search**: Instant results as you type with full-text search
-- **Dynamic Filters**: Auto-generated filters based on collection schema
-  - Text filters for string fields
-  - Range filters for numeric fields
-  - Boolean toggles for boolean fields
-- **Real-time Updates**: Filters and search apply instantly
-- **Column Management**: Show/hide columns with column picker
-- **Sorting**: Click column headers to sort ascending/descending
-- **JSON View**: View full document JSON in modal
-- **Responsive Design**: Works on all screen sizes
+- **Virtual scrolling** — `@tanstack/react-virtual` renders only visible rows for smooth handling of large datasets
+- **Resizable columns** — drag column header edges to resize; `table-layout: fixed` with `<colgroup>` for consistent widths
+- **Column picker** — toggle visibility of individual fields (defaults to first 6)
+- **Dynamic filters** — auto-generated per field type: text search, numeric min/max range, boolean dropdown
+- **Sorting** — click any column header to sort ascending/descending
+- **Full-text search** — debounced search across all query-by fields
+- **Document JSON viewer** — collapsible tree with syntax highlighting and color-coded types
+- **Inline CRUD** — create, edit (JSON editor with auto-generated templates), delete with undo toast
+- **Skeleton loading** states for initial load
 
-### 🎨 User Experience
+### Bulk Operations
 
-- **Dark/Light Mode**: Toggle between themes with smooth transitions
-- **Modern UI**: Clean, professional design inspired by Supabase and Vercel
-- **Error Handling**: Clear error messages for all failure scenarios
-- **Loading States**: Smooth loading indicators throughout
-- **Responsive Layout**: Mobile-friendly design
+- **Import** — JSON and JSONL file upload with drag-and-drop, create/upsert/update modes, document preview, per-row error reporting
+- **Export** — download entire collections as JSON or JSONL
 
-## Getting Started
+### Search Playground
 
-### Prerequisites
+- Advanced search testing panel with configurable `query_by`, sort field/order, per_page, page
+- **Visual filter builder** — add filter rows with field, operator (7 operators), and value
+- **Facet selection** and highlight field configuration
+- Prefix search and exhaustive search toggles
+- **Three result tabs** — Hits (with JSON viewer per hit), Raw JSON, Facets
+- Copy raw response • performance timing display
 
-- Node.js 16+ and npm/yarn/pnpm
-- Access to a Typesense server
+### Synonyms & Curations
 
-### Installation
+- **Synonyms manager** — create/delete multi-way and one-way synonyms with root word support
+- **Curations editor** — pin documents to positions, hide documents, override filters/sort/query for specific search rules
 
-1. **Clone or download this repository**
+### Query Diff Tool
 
-2. **Install dependencies**
+- Side-by-side comparison of two search queries
+- Shows common, unique-to-A, and unique-to-B document IDs
+- Performance timing and result count comparison
 
-   ```bash
-   npm install
-   ```
+### API Keys Manager
 
-3. **Start the development server**
+- Create scoped API keys with action presets (Search Only, Read Only, Read/Write, Admin)
+- Per-collection scoping, expiration dates
+- Show/hide and copy key values
 
-   ```bash
-   npm run dev
-   ```
+### AI Chat (Gemini 2.0 Flash)
 
-4. **Open your browser**
-   Navigate to `http://localhost:3000`
+- **Natural language queries** — ask questions about your data in plain English
+- **Function calling loop** — Gemini autonomously calls Typesense tools (search, get schema, count, CRUD) up to 5 iterations to answer complex questions
+- **Schema-aware prompting** — the AI knows your collection schemas and currently selected collection
+- **Write protection** — create, update, and delete operations require explicit user confirmation before executing
+- **Inline result tables** — search results are rendered as interactive tables within chat messages
+- **AI results view** — large result sets replace the main content area with a dedicated AI results table
+- **Markdown rendering** with syntax highlighting via `react-markdown` + `remark-gfm`
 
-### Building for Production
+### Natural Language Rules
 
-```bash
-npm run build
-```
+- Describe a curation rule in plain English and Gemini generates the Typesense override JSON
+- Preview the generated rule before applying to the collection
 
-The built files will be in the `dist` directory.
+### Embeddable Search Widget
 
-## Usage
+- Generate a standalone HTML/JS search widget for any collection
+- Configure: placeholder, max results, query_by, theme (light/dark/auto), accent color, debounce, border radius
+- **Three tabs** — live preview, generated code, configuration
+- Copy to clipboard
 
-### 1. Connect to Typesense
+### Visual Pipeline Builder
 
-When you first open the app, you'll see a connection setup screen. Enter your Typesense server details:
+- Build multi-step workflows: Import → Transform → Index → Search
+- Custom JavaScript transform functions
+- Execute pipelines sequentially with per-step result/error display
+- Named and saved pipelines
 
-- **API Key**: Your Typesense API key (admin or search-only)
-- **Host**: Your Typesense host (e.g., `localhost` or `typesense.example.com`)
-- **Port**: Port number (default: `8108`)
-- **Protocol**: `http` or `https`
-- **Connection Timeout**: Timeout in seconds (default: `5`)
+### Collaboration
 
-Click "Connect to Typesense" to establish the connection.
+- **Shared links** — create shareable links scoped to collections with configurable expiry
+- **Audit log** — tracks all user actions locally with timestamps (up to 500 entries)
 
-### 2. Browse Collections
+### Plugin System
 
-Once connected, you'll see:
+- **Custom plugin framework** with hooks: `onSearch`, `onSearchResult`, `onDocumentRender`
+- 3 built-in plugins: CSV Exporter, New Document Highlighter, Query Logger
+- Create custom plugins with JavaScript, test execution in-browser
 
-- **Left Sidebar**: List of all your collections with document counts
-- **Search Bar**: Filter collections by name
-- **Collection Cards**: Click to select and view documents
+### Search Analytics
 
-### 3. View Documents
+- Client-side analytics tracking (up to 2,000 entries)
+- **Three views** — top queries, zero-result queries, latency analysis
+- Time range filters: 1 hour, 24 hours, 7 days, all
 
-After selecting a collection:
+### Keyboard Shortcuts
 
-- **Search Bar**: Search across all text fields in the collection
-- **Filters**: Use auto-generated filters based on your schema
-  - String fields: Text input for exact matches
-  - Numeric fields: Min/Max range inputs
-  - Boolean fields: True/False/All dropdown
-- **Table View**: See your documents in a clean table
-  - Click column headers to sort
-  - Click eye icon to view full JSON
-  - Use column picker to show/hide columns
-- **Pagination**: Navigate through large datasets
+| Shortcut | Action |
+|---|---|
+| `Ctrl/⌘ + K` | Command palette / focus search |
+| `Ctrl/⌘ + N` | New document |
+| `Ctrl/⌘ + .` | Toggle AI chat panel |
+| `Ctrl/⌘ + Shift + R` | Refresh collections |
+| `Escape` | Close modals and panels |
 
-### 4. Advanced Features
+### UX & Design
 
-- **Column Picker**: Click "Columns" button to select which fields to display
-- **Sorting**: Click any column header to sort (click again to reverse)
-- **JSON View**: Click the eye icon on any row to see the full document
-- **Theme Toggle**: Switch between light and dark mode
-- **Refresh**: Click refresh icon to reload collections
+- **Dark / light mode** — persisted toggle with smooth transitions
+- **Command palette** — VS Code–style `Ctrl+K` fuzzy search across collections, actions, and navigation
+- **Toast notifications** — success, error, info, warning with auto-dismiss and undo support
+- **Confetti effects** — sparkle, stars, and celebration bursts on key actions
+- **Responsive layout** — collapsible sidebar, mobile-friendly design
+- **Error boundary** — graceful error recovery with retry/reload
 
-## Project Structure
+### Landing Page
 
-```
-typesense-ui/
-├── src/
-│   ├── components/
-│   │   ├── ConnectionSetup.tsx    # Initial setup form
-│   │   ├── Header.tsx              # App header with controls
-│   │   ├── CollectionsList.tsx     # Collections sidebar
-│   │   └── CollectionViewer.tsx    # Main document viewer
-│   ├── context/
-│   │   └── AppContext.tsx          # Global state management
-│   ├── services/
-│   │   └── typesense.ts            # Typesense API client
-│   ├── types/
-│   │   └── index.ts                # TypeScript type definitions
-│   ├── lib/
-│   │   └── utils.ts                # Utility functions
-│   ├── App.tsx                     # Main app component
-│   ├── main.tsx                    # Entry point
-│   └── index.css                   # Global styles
-├── public/
-├── index.html
-├── package.json
-├── tsconfig.json
-├── tailwind.config.js
-└── vite.config.ts
-```
+- **Three.js particle scene** — 1,500 animated particles with mouse-reactive parallax and glowing core geometry
+- **GSAP + ScrollTrigger** animations throughout — staggered text reveals, 3D tilt cards, scroll-scrub timeline
+- **Lenis** smooth scrolling
+- Respects `prefers-reduced-motion`
 
-## Technologies Used
+---
 
-- **React 18**: Modern React with hooks
-- **TypeScript**: Type-safe code
-- **Vite**: Fast build tool and dev server
-- **Tailwind CSS**: Utility-first styling
-- **Typesense JS Client**: Official Typesense client
-- **Lucide React**: Beautiful icon set
-- **LocalStorage**: Persistent connection settings
+## Tech Stack
 
-## Development
+| Layer | Technologies |
+|---|---|
+| **Framework** | React 18, TypeScript, Vite 5 |
+| **Styling** | Tailwind CSS 3, Lucide React icons |
+| **Data** | Typesense JS client, `@tanstack/react-virtual` |
+| **AI** | Google Gemini 2.0 Flash (`@google/generative-ai`), `react-markdown` |
+| **3D / Animation** | Three.js, React Three Fiber, GSAP, Lenis |
+| **Security** | Web Crypto API (AES-GCM + PBKDF2) |
+| **Effects** | `canvas-confetti` |
+| **CLI** | Express (production), Vite (development) |
+| **Testing** | Vitest, Testing Library |
 
-### Available Scripts
+---
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+## Scripts
 
-### Customization
+| Command | Description |
+|---|---|
+| `npm run dev` | Start Vite dev server with HMR |
+| `npm run build` | Type-check + production build |
+| `npm run preview` | Preview the production build locally |
+| `npm run test` | Run tests with Vitest |
+| `npm run lint` | Lint with ESLint |
 
-**Colors**: Edit `tailwind.config.js` to change the color scheme
-**Port**: Change port in `vite.config.ts`
-**Default Settings**: Modify initial values in `ConnectionSetup.tsx`
-
-## Error Handling
-
-The app handles various error scenarios:
-
-- ❌ Invalid connection details
-- ❌ Collection not found
-- ❌ Invalid queries
-- ❌ Network errors
-- ❌ Authentication failures
-
-All errors are displayed with clear, user-friendly messages.
+---
 
 ## Browser Support
 
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
+Chrome, Edge, Firefox, and Safari (latest versions). Requires the Web Crypto API (all modern browsers).
 
 ## License
 
-MIT License - feel free to use this in your projects!
+[MIT](LICENSE)
 
 ## Contributing
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+Contributions are welcome — open an issue or submit a pull request.
 
 ## Acknowledgments
 
-- Design inspired by [Typesense Dashboard](https://github.com/typesense/typesense-dashboard), [Supabase](https://supabase.com), and [Vercel](https://vercel.com)
-- Icons by [Lucide](https://lucide.dev/)
-- Built with ❤️ using [Typesense](https://typesense.org)
+- [Typesense](https://typesense.org) — the search engine this dashboard is built for
+- [Lucide](https://lucide.dev/) — icon library
+- Design inspired by [Supabase](https://supabase.com) and [Vercel](https://vercel.com)
