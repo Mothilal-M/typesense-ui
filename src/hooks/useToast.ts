@@ -7,6 +7,7 @@ export interface Toast {
   duration?: number;
 }
 
+const MAX_TOASTS = 4;
 let globalToasts: Toast[] = [];
 let globalSetters: Set<React.Dispatch<React.SetStateAction<Toast[]>>> =
   new Set();
@@ -24,7 +25,7 @@ export function showToast(
 ) {
   const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   const toast: Toast = { id, type, message, duration };
-  broadcast((prev) => [...prev, toast]);
+  broadcast((prev) => [...prev, toast].slice(-MAX_TOASTS));
 
   if (duration > 0) {
     setTimeout(() => {

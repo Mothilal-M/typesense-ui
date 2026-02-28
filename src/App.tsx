@@ -6,6 +6,7 @@ import { Header } from "./components/Header";
 import { CollectionsList } from "./components/CollectionsList";
 import { CollectionViewer } from "./components/CollectionViewer";
 import { ToastContainer } from "./components/ui/Toast";
+import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { AiChatButton } from "./components/ai/AiChatButton";
 import { AiChatPanel } from "./components/ai/AiChatPanel";
 
@@ -93,16 +94,18 @@ function AiChat() {
 
 function App() {
   return (
-    <AppProvider>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/app" element={<DashboardContent />} />
-        </Routes>
-      </Suspense>
-      <AiChat />
-      <ToastContainer />
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/app" element={<DashboardContent />} />
+          </Routes>
+        </Suspense>
+        <AiChat />
+        <ToastContainer />
+      </AppProvider>
+    </ErrorBoundary>
   );
 }
 
