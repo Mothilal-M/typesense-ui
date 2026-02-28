@@ -118,8 +118,22 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
             <p className="text-gray-500 dark:text-gray-300 font-semibold">
               {searchQuery
                 ? "No collections found"
-                : "No collections available"}
+                : "No collections yet"}
             </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5 max-w-[200px] mx-auto">
+              {searchQuery
+                ? "Try a different search term."
+                : "Create your first collection to start managing data."}
+            </p>
+            {!searchQuery && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Create Collection
+              </button>
+            )}
           </div>
         ) : (
           filteredCollections.map((collection, index) => (
@@ -218,10 +232,13 @@ export function CollectionsList({ onCollectionSelect }: CollectionsListProps) {
                     {collection.fields.slice(0, 5).map((field, idx) => (
                       <span
                         key={field.name}
-                        className="px-2.5 py-1 text-xs bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-950/50 dark:to-purple-950/50 text-blue-700 dark:text-blue-300 rounded-lg font-semibold border border-blue-200/50 dark:border-blue-800/50 shadow-sm animate-slide-in-right tracking-tight"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-950/50 dark:to-purple-950/50 text-blue-700 dark:text-blue-300 rounded-lg font-semibold border border-blue-200/50 dark:border-blue-800/50 shadow-sm animate-slide-in-right tracking-tight"
                         style={{ animationDelay: `${idx * 50}ms` }}
                       >
                         {field.name}
+                        <span className="px-1 py-px text-[10px] font-medium rounded bg-blue-200/60 dark:bg-blue-800/40 text-blue-600 dark:text-blue-400">
+                          {field.type}
+                        </span>
                       </span>
                     ))}
                     {collection.fields.length > 5 && (

@@ -5,6 +5,7 @@ export interface Toast {
   type: "success" | "error" | "info" | "warning";
   message: string;
   duration?: number;
+  onUndo?: () => void;
 }
 
 const MAX_TOASTS = 4;
@@ -21,10 +22,11 @@ function broadcast(updater: (prev: Toast[]) => Toast[]) {
 export function showToast(
   type: Toast["type"],
   message: string,
-  duration = 4000
+  duration = 4000,
+  onUndo?: () => void
 ) {
   const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-  const toast: Toast = { id, type, message, duration };
+  const toast: Toast = { id, type, message, duration, onUndo };
   broadcast((prev) => [...prev, toast].slice(-MAX_TOASTS));
 
   if (duration > 0) {
@@ -42,8 +44,8 @@ export function useToast() {
   globalSetters.add(setToasts);
 
   const addToast = useCallback(
-    (type: Toast["type"], message: string, duration = 4000) => {
-      return showToast(type, message, duration);
+    (type: Toast["type"], message: string, duration = 4000, onUndo?: () => void) => {
+      return showToast(type, message, duration, onUndo);
     },
     []
   );

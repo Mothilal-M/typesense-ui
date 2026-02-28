@@ -64,9 +64,22 @@ function ToastItem({
     >
       <div className="flex items-start gap-3 px-4 py-3">
         <Icon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${c.iconColor}`} />
-        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 flex-1 leading-snug">
-          {toast.message}
-        </p>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-gray-800 dark:text-gray-100 leading-snug">
+            {toast.message}
+          </p>
+          {toast.onUndo && (
+            <button
+              onClick={() => {
+                toast.onUndo?.();
+                handleDismiss();
+              }}
+              className="mt-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors underline underline-offset-2"
+            >
+              Undo
+            </button>
+          )}
+        </div>
         <button
           onClick={handleDismiss}
           className="p-0.5 rounded hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0"

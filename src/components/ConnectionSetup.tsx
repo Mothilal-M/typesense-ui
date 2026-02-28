@@ -7,6 +7,22 @@ import { Logo } from "./ui/Logo";
 import { useToast } from "../hooks/useToast";
 import { fireStars } from "../lib/confetti";
 
+/** Map raw Typesense/network errors to user-friendly messages */
+function parseConnectionError(raw: string): string {
+  const lower = raw.toLowerCase();
+  if (lower.includes("econnrefused") || lower.includes("failed to fetch") || lower.includes("networkerror"))
+    return "Connection refused — make sure Typesense is running on the given host and port.";
+  if (lower.includes("401") || lower.includes("unauthorized") || lower.includes("forbidden"))
+    return "Invalid API key — double-check your credentials.";
+  if (lower.includes("timeout") || lower.includes("timedout") || lower.includes("timed out"))
+    return "Connection timed out — increase the timeout or check your network.";
+  if (lower.includes("404"))
+    return "Server returned 404 — verify the host and port are correct.";
+  if (lower.includes("ssl") || lower.includes("certificate"))
+    return "SSL/TLS error — try switching protocol to HTTP, or check your certificate.";
+  return raw;
+}
+
 export function ConnectionSetup() {
   const { setConfig, theme, toggleTheme } = useApp();
   const { addToast } = useToast();
@@ -37,8 +53,10 @@ export function ConnectionSetup() {
       addToast("success", "Connected to Typesense successfully!");
       fireStars();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to connect");
-      addToast("error", err instanceof Error ? err.message : "Failed to connect to Typesense");
+      const raw = err instanceof Error ? err.message : String(err);
+      const friendly = parseConnectionError(raw);
+      setError(friendly);
+      addToast("error", friendly);
     } finally {
       setIsConnecting(false);
     }
@@ -250,9 +268,20 @@ export function ConnectionSetup() {
                   onChange={(e) => handleChange("apiKey", e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-slate-600 rounded-xl bg-white/90 dark:bg-slate-800/90 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 text-sm font-medium"
                   required
-                  placeholder="Enter your API key"
+                  placeholder="e.g., xyz123abc456def789..."
                 />
               </div>
+              <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
+                Your admin or search-only API key.{" "}
+                <a
+                  href="https://typesense.org/docs/latest/api/api-keys.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 underline underline-offset-2"
+                >
+                  What is this?
+                </a>
+              </p>
             </div>
 
             {/* Host */}
@@ -272,9 +301,12 @@ export function ConnectionSetup() {
                   onChange={(e) => handleChange("host", e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-slate-600 rounded-xl bg-white/90 dark:bg-slate-800/90 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 text-sm font-medium"
                   required
-                  placeholder="e.g., localhost or example.com"
+                  placeholder="e.g., localhost or ts.example.com"
                 />
               </div>
+              <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
+                Typesense Cloud? Use <code className="bg-gray-100 dark:bg-slate-800 px-1 py-0.5 rounded text-[11px]">xxx.a1.typesense.net</code>
+              </p>
             </div>
 
             {/* Port + Protocol row */}

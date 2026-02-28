@@ -104,7 +104,7 @@ export function AiChatPanel({ isOpen }: AiChatPanelProps) {
         {!isReady ? (
           <GeminiKeySetup />
         ) : messages.length === 0 ? (
-          <WelcomeMessage />
+          <WelcomeMessage onSendPrompt={sendMessage} />
         ) : (
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)
         )}
@@ -128,17 +128,37 @@ export function AiChatPanel({ isOpen }: AiChatPanelProps) {
   );
 }
 
-function WelcomeMessage() {
+const SUGGESTED_PROMPTS = [
+  { icon: "📋", text: "List all my collections" },
+  { icon: "🔍", text: "Search for documents where" },
+  { icon: "📊", text: "How many documents are in each collection?" },
+  { icon: "🏗️", text: "Show me the schema of" },
+  { icon: "➕", text: "Create a new document in" },
+];
+
+function WelcomeMessage({ onSendPrompt }: { onSendPrompt: (text: string) => void }) {
   return (
-    <div className="text-center py-8 animate-fade-in">
+    <div className="text-center py-6 animate-fade-in">
       <Sparkles className="w-10 h-10 text-purple-500/50 mx-auto mb-3" />
-      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-        Ask me anything about your data
+      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+        AI Assistant
       </p>
-      <div className="space-y-1.5 text-xs text-gray-500 dark:text-gray-400">
-        <p>&quot;How many documents are in this collection?&quot;</p>
-        <p>&quot;Show me users with email containing @gmail.com&quot;</p>
-        <p>&quot;What fields does the products collection have?&quot;</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
+        Ask me anything about your Typesense data. Try these:
+      </p>
+      <div className="flex flex-col gap-2 max-w-xs mx-auto">
+        {SUGGESTED_PROMPTS.map((p) => (
+          <button
+            key={p.text}
+            onClick={() => onSendPrompt(p.text)}
+            className="flex items-center gap-2.5 px-3.5 py-2.5 text-left text-xs rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-purple-300 dark:hover:border-purple-600 hover:shadow-md transition-all group"
+          >
+            <span className="text-base">{p.icon}</span>
+            <span className="text-gray-700 dark:text-gray-300 group-hover:text-purple-700 dark:group-hover:text-purple-300 font-medium">
+              {p.text}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );
