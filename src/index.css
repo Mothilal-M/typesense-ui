@@ -6,6 +6,46 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Skip to main content link for accessibility and SEO */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #7C3AED;
+  color: white;
+  padding: 8px 16px;
+  z-index: 9999;
+  font-weight: 600;
+  border-radius: 0 0 8px 0;
+  transition: top 0.2s ease;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+/* Optimize font loading - prevent CLS */
+@font-face {
+  font-family: "Inter";
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cabinet Grotesk";
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  font-display: swap;
+}
+
+/* Content visibility for off-screen sections - improves rendering performance */
+.landing-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100vh;
+}
+
 @layer base {
   * {
     @apply antialiased;

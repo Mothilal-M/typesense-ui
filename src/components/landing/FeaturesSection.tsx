@@ -136,7 +136,12 @@ export function FeaturesSection() {
   }, []);
 
   return (
-    <section id="features" ref={sectionRef} className="landing-section bg-[#0a0a1a] py-24 lg:py-0 lg:h-screen flex flex-col justify-center overflow-hidden">
+    <section
+      id="features"
+      ref={sectionRef}
+      className="landing-section bg-[#0a0a1a] py-24 lg:py-0 lg:h-screen flex flex-col justify-center overflow-hidden"
+      aria-label="Features of Typesense UI"
+    >
       <div className="max-w-7xl mx-auto px-6 mb-16 w-full relative z-10">
         <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6">
           Everything You Need,
@@ -144,7 +149,7 @@ export function FeaturesSection() {
           <span className="text-gradient-neon">Out of the Box.</span>
         </h2>
         <p className="text-[var(--landing-text-secondary)] text-lg max-w-2xl">
-          Say goodbye to complex curl commands. Typesense UI gives you complete control over your search data with a beautiful, intuitive interface.
+          Say goodbye to complex curl commands. <strong>Typesense UI</strong> gives you complete control over your search data with a beautiful, intuitive interface.
         </p>
       </div>
 

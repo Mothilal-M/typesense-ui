@@ -1,0 +1,20 @@
+{
+  "name": "Typesense UI",
+  "short_name": "Typesense UI",
+  "description": "A modern, open-source visual dashboard for managing Typesense search engine collections with AI-powered queries.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a1a",
+  "theme_color": "#7C3AED",
+  "orientation": "any",
+  "categories": ["developer tools", "productivity", "utilities"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

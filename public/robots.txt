@@ -1,0 +1,22 @@
+# Robots.txt for Typesense UI
+# https://typesense.mothilal.dev
+
+User-agent: *
+Allow: /
+Disallow: /app
+
+# Allow crawlers to index the landing page and static assets
+Allow: /favicon.svg
+Allow: /og-image.png
+Allow: /sitemap.xml
+
+# Sitemap location
+Sitemap: https://typesense.mothilal.dev/sitemap.xml
+
+# Crawl-delay for politeness
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1

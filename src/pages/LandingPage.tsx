@@ -11,6 +11,7 @@ import {
   DemoSection,
   Footer
 } from "../components/landing";
+import { SEOHead } from "../components/SEOHead";
 
 export default function LandingPage() {
   useEffect(() => {
@@ -44,14 +45,26 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="landing-dark bg-[#0a0a1a] min-h-screen text-[var(--landing-text-primary)] font-sans antialiased overflow-x-hidden selection:bg-[#8d30ff]/30 selection:text-white">
-      <Navbar />
-      <HeroSection />
-      <FeaturesSection />
-      <AiSection />
-      <HowItWorksSection />
-      <DemoSection />
-      <Footer />
-    </div>
+    <>
+      <SEOHead
+        title="Typesense UI — Open Source Search Engine Dashboard & Admin Panel"
+        description="A modern, open-source visual dashboard for managing Typesense search engine collections. AI-powered natural language queries, real-time full-text search, dynamic filtering, schema editor, and zero-install CLI. The best Typesense admin panel for developers."
+        keywords="typesense, typesense ui, typesense dashboard, typesense admin panel, search engine dashboard, typesense collections manager, open source search ui, typesense visual editor, AI search, natural language search queries, typesense react dashboard, search analytics, document management, schema editor, typesense cli, npx typesense-ui, typesense gui, search engine management tool"
+        canonicalPath="/"
+      />
+      <a href="#features" className="skip-to-main">Skip to main content</a>
+      <div
+        className="landing-dark bg-[#0a0a1a] min-h-screen text-[var(--landing-text-primary)] font-sans antialiased overflow-x-hidden selection:bg-[#8d30ff]/30 selection:text-white"
+        role="main"
+      >
+        <Navbar />
+        <HeroSection />
+        <FeaturesSection />
+        <AiSection />
+        <HowItWorksSection />
+        <DemoSection />
+        <Footer />
+      </div>
+    </>
   );
 }
