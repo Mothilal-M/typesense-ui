@@ -79,7 +79,7 @@ export function AiSection() {
   }, []);
 
   return (
-    <section id="ai" ref={sectionRef} className="landing-section bg-[#0a0a1a] py-32 relative overflow-hidden">
+    <section id="ai" ref={sectionRef} className="landing-section bg-[#0a0a1a] py-32 relative overflow-hidden" aria-label="AI-Powered Search Features">
       {/* Decorative Orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#8d30ff]/20 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#0cdcf7]/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
@@ -97,7 +97,7 @@ export function AiSection() {
             <span className="text-gradient-neon">AI Intelligence.</span>
           </h2>
           <p className="text-[var(--landing-text-secondary)] text-lg mb-12">
-            Stop writing complex filter queries. Just ask for what you need, and let the AI handle the heavy lifting of reading schemas, executing searches, and formatting results.
+            Stop writing complex filter queries. Just ask for what you need in <strong>natural language</strong>, and let the <strong>Gemini AI</strong> handle the heavy lifting of reading schemas, executing searches, and formatting results.
           </p>
 
           <div className="space-y-8">

@@ -19,6 +19,7 @@ import { VisualPipelineBuilder } from "./components/VisualPipelineBuilder";
 import { SchemaMigrationTool } from "./components/SchemaMigrationTool";
 import { Collaboration } from "./components/Collaboration";
 import { PluginSystem } from "./components/PluginSystem";
+import { SEOHead } from "./components/SEOHead";
 import {
   Key,
   BarChart3,
@@ -88,6 +89,13 @@ function DashboardContent() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <SEOHead
+        title="Dashboard — Typesense UI | Manage Search Collections"
+        description="Connect to your Typesense server and manage collections, documents, schemas, and search configurations with an intuitive visual dashboard."
+        keywords="typesense dashboard, typesense admin, manage typesense, typesense collections, search management"
+        canonicalPath="/app"
+        noIndex={true}
+      />
       <Header
         onToggleSidebar={() => setSidebarOpen((v) => !v)}
         sidebarOpen={sidebarOpen}

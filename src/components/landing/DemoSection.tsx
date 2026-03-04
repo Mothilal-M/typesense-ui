@@ -38,13 +38,13 @@ export function DemoSection() {
   }, []);
 
   return (
-    <section id="demo" ref={containerRef} className="landing-section bg-[#0a0a1a] py-32 overflow-hidden">
+    <section id="demo" ref={containerRef} className="landing-section bg-[#0a0a1a] py-32 overflow-hidden" aria-label="Live Demo of Typesense UI">
       <div className="max-w-7xl mx-auto px-6 text-center">
         <h2 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
           See It In <span className="text-gradient-neon">Action.</span>
         </h2>
         <p className="text-[var(--landing-text-secondary)] text-lg mb-16 max-w-2xl mx-auto">
-          Ready to experience the fastest way to manage Typesense collections? Start using Typesense UI in your browser right now.
+          Ready to experience the fastest way to manage <strong>Typesense search collections</strong>? Start using the <strong>Typesense UI dashboard</strong> in your browser right now — no installation required. Just run <code className="px-2 py-1 rounded bg-[#12141f] text-[#0cdcf7] text-sm border border-[#1e2035]">npx typesense-ui</code> to get started.
         </p>
 
         {/* Browser Mockup */}

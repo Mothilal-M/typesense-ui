@@ -53,6 +53,8 @@ export function Navbar() {
     <nav
       ref={navRef}
       className="fixed top-0 left-0 right-0 z-50 transition-colors border-b border-transparent"
+      role="navigation"
+      aria-label="Main navigation"
     >
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center gap-2" ref={brandRef}>
@@ -67,9 +69,9 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--landing-text-secondary)]">
-          <button onClick={() => scrollTo("features")} className="hover:text-white transition-colors">Features</button>
-          <button onClick={() => scrollTo("ai")} className="hover:text-white transition-colors">AI Search</button>
-          <button onClick={() => scrollTo("how-it-works")} className="hover:text-white transition-colors">How It Works</button>
+          <button onClick={() => scrollTo("features")} className="hover:text-white transition-colors" aria-label="View Typesense UI features">Features</button>
+          <button onClick={() => scrollTo("ai")} className="hover:text-white transition-colors" aria-label="Learn about AI search capabilities">AI Search</button>
+          <button onClick={() => scrollTo("how-it-works")} className="hover:text-white transition-colors" aria-label="See how Typesense UI works">How It Works</button>
         </div>
 
         <div className="flex items-center gap-4">

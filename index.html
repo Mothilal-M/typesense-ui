@@ -1,27 +1,234 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>Typesense UI — Open Source Search Engine Dashboard & Admin Panel</title>
+    <meta name="title" content="Typesense UI — Open Source Search Engine Dashboard & Admin Panel" />
+    <meta name="description" content="A modern, open-source visual dashboard for managing Typesense search engine collections. Browse, search, create, and edit documents with AI-powered natural language queries, real-time filtering, dark mode, and zero-install CLI. The best Typesense admin panel." />
+    <meta name="keywords" content="typesense, typesense ui, typesense dashboard, typesense admin panel, search engine dashboard, typesense collections, typesense manager, open source search ui, typesense visual editor, typesense client, search admin, typesense gui, AI search, natural language search, typesense react, search analytics, document management, schema editor, typesense cli" />
+    <meta name="author" content="Mothilal" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    <link rel="canonical" href="https://typesense.mothilal.dev/" />
+
+    <!-- Favicon & Manifest -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A modern, open-source UI for managing and exploring Typesense collections with real-time search, filtering, and beautiful dark mode." />
-    <meta property="og:title" content="Typesense UI — Search Engine Dashboard" />
-    <meta property="og:description" content="Manage your Typesense search collections with an intuitive visual dashboard. Browse, search, create, and edit — all from your browser." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Typesense UI — Search Engine Dashboard" />
-    <meta name="twitter:description" content="A modern dashboard to manage Typesense collections and documents visually." />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Theme Color -->
     <meta name="theme-color" content="#7C3AED" />
+    <meta name="msapplication-TileColor" content="#7C3AED" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://typesense.mothilal.dev/" />
+    <meta property="og:title" content="Typesense UI — Open Source Search Engine Dashboard & Admin Panel" />
+    <meta property="og:description" content="Manage your Typesense search collections with an intuitive visual dashboard. Browse, search, create, and edit documents with AI-powered queries — all from your browser. Zero setup required." />
+    <meta property="og:image" content="https://typesense.mothilal.dev/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Typesense UI Dashboard - Visual interface for managing Typesense search collections" />
+    <meta property="og:site_name" content="Typesense UI" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://typesense.mothilal.dev/" />
+    <meta name="twitter:title" content="Typesense UI — Open Source Search Engine Dashboard" />
+    <meta name="twitter:description" content="A modern dashboard to manage Typesense collections and documents visually. AI-powered search, real-time filtering, dark mode, and zero-install CLI." />
+    <meta name="twitter:image" content="https://typesense.mothilal.dev/og-image.png" />
+    <meta name="twitter:image:alt" content="Typesense UI Dashboard Screenshot" />
+    <meta name="twitter:creator" content="@mothilal_dev" />
+
+    <!-- Additional SEO Meta -->
+    <meta name="application-name" content="Typesense UI" />
+    <meta name="apple-mobile-web-app-title" content="Typesense UI" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Structured Data: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Typesense UI",
+      "alternateName": ["Typesense Dashboard", "Typesense Admin Panel", "Typesense GUI"],
+      "description": "A modern, open-source visual dashboard for managing and exploring Typesense search engine collections with AI-powered natural language queries, real-time search, filtering, and beautiful dark mode.",
+      "url": "https://typesense.mothilal.dev",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires JavaScript. Modern browsers (Chrome, Firefox, Safari, Edge).",
+      "softwareVersion": "1.0.5",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Mothilal",
+        "url": "https://github.com/Mothilal-M"
+      },
+      "sourceOrganization": {
+        "@type": "Organization",
+        "name": "Typesense UI",
+        "url": "https://github.com/Mothilal-M/typesense-ui"
+      },
+      "license": "https://opensource.org/licenses/MIT",
+      "featureList": [
+        "Visual collection management",
+        "Real-time full-text search",
+        "AI-powered natural language queries with Gemini",
+        "Dynamic faceted filtering",
+        "Document CRUD operations",
+        "Schema editor and migration tool",
+        "Search analytics dashboard",
+        "Dark mode and light mode",
+        "Zero-install CLI (npx typesense-ui)",
+        "Embeddable search widget",
+        "API key management",
+        "Bulk import and export",
+        "Search playground",
+        "Synonyms and curations editor",
+        "Plugin system"
+      ],
+      "screenshot": "https://typesense.mothilal.dev/og-image.png",
+      "keywords": "typesense, search engine, dashboard, admin panel, AI search, open source"
+    }
+    </script>
+
+    <!-- Structured Data: SoftwareSourceCode -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
+      "name": "Typesense UI",
+      "description": "Open-source visual dashboard for Typesense search engine management",
+      "codeRepository": "https://github.com/Mothilal-M/typesense-ui",
+      "programmingLanguage": ["TypeScript", "React", "JavaScript"],
+      "runtimePlatform": "Node.js",
+      "license": "https://opensource.org/licenses/MIT",
+      "author": {
+        "@type": "Person",
+        "name": "Mothilal"
+      }
+    }
+    </script>
+
+    <!-- Structured Data: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Typesense UI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Typesense UI is a modern, open-source visual dashboard for managing and exploring Typesense search engine collections. It provides AI-powered natural language queries, real-time search, document CRUD operations, schema editing, and analytics — all from your browser with no setup required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I install Typesense UI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Simply run 'npx typesense-ui' in your terminal. No installation needed. It opens a full dashboard at http://localhost:3000. You can also use a custom port with 'npx typesense-ui --port=4000'."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Typesense UI free and open source?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Typesense UI is completely free and open source under the MIT License. You can use it, modify it, and contribute to it on GitHub."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Typesense UI support AI-powered search?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Typesense UI integrates Google Gemini 2.0 Flash for AI-powered natural language queries. You can ask questions about your data in plain English, and the AI will translate them into Typesense search parameters."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data: BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://typesense.mothilal.dev/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Dashboard",
+          "item": "https://typesense.mothilal.dev/app"
+        }
+      ]
+    }
+    </script>
+
+    <!-- Preconnect to critical origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://api.fontshare.com" />
+
+    <!-- Fonts with display=swap for better CLS -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@100,200,300,400,500,700,800,900&f[]=clash-display@200,300,400,500,600,700&display=swap" rel="stylesheet" />
-    <title>Typesense UI — Search Engine Dashboard</title>
   </head>
   <body>
+    <!--
+      Noscript fallback for search engines and users without JavaScript.
+      Critical for SEO since this is a SPA.
+    -->
+    <noscript>
+      <div style="padding: 2rem; font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto;">
+        <h1>Typesense UI — Open Source Search Engine Dashboard</h1>
+        <p>Typesense UI is a modern, open-source visual dashboard for managing and exploring Typesense search engine collections. It features AI-powered natural language queries, real-time full-text search, dynamic filtering, and a beautiful dark mode interface.</p>
+        <h2>Key Features</h2>
+        <ul>
+          <li><strong>Visual Collection Management</strong> — Browse all collections with live document counts and schema inspection</li>
+          <li><strong>Full-Text Search</strong> — Sub-millisecond, typo-tolerant search across all text fields</li>
+          <li><strong>AI-Powered Queries</strong> — Ask questions in plain English using Google Gemini integration</li>
+          <li><strong>Document CRUD</strong> — Create, read, update, and delete documents with a built-in JSON editor</li>
+          <li><strong>Schema Editor</strong> — Visual schema creation and migration tools</li>
+          <li><strong>Search Analytics</strong> — Track top queries, zero-result searches, and latency metrics</li>
+          <li><strong>Zero-Install CLI</strong> — Run <code>npx typesense-ui</code> to start instantly</li>
+          <li><strong>Dark Mode</strong> — Beautiful dark and light themes</li>
+          <li><strong>Fully Responsive</strong> — Works on desktop, tablet, and mobile</li>
+        </ul>
+        <h2>Quick Start</h2>
+        <p>Run <code>npx typesense-ui</code> in your terminal to launch the dashboard. No installation required.</p>
+        <p><a href="https://github.com/Mothilal-M/typesense-ui">View on GitHub</a> | <a href="https://www.npmjs.com/package/typesense-ui">View on npm</a></p>
+      </div>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

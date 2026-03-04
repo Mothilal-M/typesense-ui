@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1a"/>
+      <stop offset="100%" style="stop-color:#12141f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8d30ff"/>
+      <stop offset="100%" style="stop-color:#0cdcf7"/>
+    </linearGradient>
+    <linearGradient id="badge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0cdcf7"/>
+      <stop offset="100%" style="stop-color:#8d30ff"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Decorative orbs -->
+  <circle cx="200" cy="500" r="200" fill="#8d30ff" opacity="0.08"/>
+  <circle cx="1000" cy="130" r="250" fill="#0cdcf7" opacity="0.06"/>
+  
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+  
+  <!-- Logo icon -->
+  <rect x="80" y="200" width="64" height="64" rx="14" fill="url(#badge)"/>
+  <text x="112" y="244" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">T</text>
+  
+  <!-- Title -->
+  <text x="160" y="236" font-family="Arial, sans-serif" font-size="44" font-weight="bold" fill="white">Typesense UI</text>
+  
+  <!-- Subtitle -->
+  <text x="80" y="310" font-family="Arial, sans-serif" font-size="28" fill="#a0a0c0">Open Source Search Engine Dashboard</text>
+  
+  <!-- Description -->
+  <text x="80" y="370" font-family="Arial, sans-serif" font-size="20" fill="#707090">Visual collection management • AI-powered queries • Real-time search</text>
+  <text x="80" y="400" font-family="Arial, sans-serif" font-size="20" fill="#707090">Schema editor • Dark mode • Zero-install CLI</text>
+  
+  <!-- CTA badge -->
+  <rect x="80" y="445" width="200" height="44" rx="22" fill="url(#accent)"/>
+  <text x="180" y="473" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">npx typesense-ui</text>
+  
+  <!-- GitHub badge -->
+  <rect x="300" y="445" width="180" height="44" rx="22" fill="none" stroke="#1e2035" stroke-width="2"/>
+  <text x="390" y="473" font-family="Arial, sans-serif" font-size="16" fill="#a0a0c0" text-anchor="middle">★ Open Source</text>
+  
+  <!-- Bottom accent -->
+  <rect x="0" y="626" width="1200" height="4" fill="url(#accent)"/>
+</svg>

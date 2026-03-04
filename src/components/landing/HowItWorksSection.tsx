@@ -72,7 +72,7 @@ export function HowItWorksSection() {
   }, []);
 
   return (
-    <section id="how-it-works" ref={sectionRef} className="landing-section bg-[#0a0a1a] py-32">
+    <section id="how-it-works" ref={sectionRef} className="landing-section bg-[#0a0a1a] py-32" aria-label="How Typesense UI Works">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-24">
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
