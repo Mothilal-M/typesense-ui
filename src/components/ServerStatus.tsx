@@ -1,7 +1,6 @@
 import { useState, useId } from "react";
-import { createPortal } from "react-dom";
 import {
-  X,
+  ArrowLeft,
   Activity,
   RefreshCw,
   Trash2,
@@ -16,7 +15,6 @@ import { useToast } from "../hooks/useToast";
 import type { MetricsSnapshot } from "../types";
 
 interface ServerStatusProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -219,13 +217,11 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
 
 // ─── Main Component ──────────────────────────────────────────────
 
-export function ServerStatus({ isOpen, onClose }: ServerStatusProps) {
-  const { current, history, debugInfo, isLoading, error, clearCache, refresh } = useServerMetrics(5000, isOpen);
+export function ServerStatus({ onClose }: ServerStatusProps) {
+  const { current, history, debugInfo, isLoading, error, clearCache, refresh } = useServerMetrics(5000);
   const { addToast } = useToast();
   const [tab, setTab] = useState<"overview" | "network" | "typesense">("overview");
   const [isClearing, setIsClearing] = useState(false);
-
-  if (!isOpen) return null;
 
   const handleClearCache = async () => {
     setIsClearing(true);
@@ -243,19 +239,15 @@ export function ServerStatus({ isOpen, onClose }: ServerStatusProps) {
   const networkRecv = computeDeltas(history, (s) => s.metrics.network.receivedBytes);
   const networkSent = computeDeltas(history, (s) => s.metrics.network.sentBytes);
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-4xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
+  return (
+    <div className="h-full flex flex-col bg-white dark:bg-slate-900">
         {/* ── Header ────────────────────────────────────────── */}
         <div className="px-5 py-4 border-b border-gray-100 dark:border-slate-800 bg-gradient-to-r from-blue-50 via-cyan-50 to-teal-50 dark:from-blue-900/20 dark:via-cyan-900/20 dark:to-teal-900/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
+              <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/60 dark:hover:bg-slate-800 transition-colors" title="Back to dashboard">
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
               <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg">
                 <Activity className="w-5 h-5" />
               </div>
@@ -285,12 +277,6 @@ export function ServerStatus({ isOpen, onClose }: ServerStatusProps) {
                 title="Refresh"
               >
                 <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-              </button>
-              <button
-                onClick={onClose}
-                className="p-2 rounded-lg hover:bg-white/60 dark:hover:bg-slate-800 transition-colors text-gray-500 dark:text-gray-400"
-              >
-                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -538,9 +524,7 @@ export function ServerStatus({ isOpen, onClose }: ServerStatusProps) {
             </span>
           )}
         </div>
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 

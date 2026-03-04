@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { createPortal } from "react-dom";
-import { X, Share2, Link, Trash2, Clock, User, Activity, Copy, Check, Eye, Plus } from "lucide-react";
+import { ArrowLeft, Share2, Link, Trash2, Clock, User, Activity, Copy, Check, Eye, Plus } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { useToast } from "../hooks/useToast";
 import type { AuditLogEntry, SharedLink } from "../types";
@@ -9,7 +8,6 @@ const AUDIT_KEY = "typesense-audit-log";
 const SHARE_KEY = "typesense-shared-links";
 
 interface CollaborationProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -21,7 +19,7 @@ export function auditLog(action: string, target: string, detail?: string) {
   localStorage.setItem(AUDIT_KEY, JSON.stringify(entries));
 }
 
-export function Collaboration({ isOpen, onClose }: CollaborationProps) {
+export function Collaboration({ onClose }: CollaborationProps) {
   const { collections } = useApp();
   const { addToast } = useToast();
   const [tab, setTab] = useState<"links" | "audit">("links");
@@ -39,7 +37,7 @@ export function Collaboration({ isOpen, onClose }: CollaborationProps) {
     setAuditEntries(JSON.parse(localStorage.getItem(AUDIT_KEY) || "[]"));
   }, []);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => { load(); }, []);
 
   const createLink = () => {
     if (!newCollection) { addToast("error", "Select a collection"); return; }
@@ -95,15 +93,15 @@ export function Collaboration({ isOpen, onClose }: CollaborationProps) {
 
   const isExpired = (link: SharedLink) => link.expiresAt ? new Date(link.expiresAt).getTime() < Date.now() : false;
 
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 z-[9999] animate-fade-in" onClick={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+  return (
+    <div className="h-full flex flex-col bg-white dark:bg-slate-900">
         {/* Header */}
         <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-3">
+              <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/60 dark:hover:bg-slate-800 transition-colors" title="Back to dashboard">
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
               <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
                 <Share2 className="w-5 h-5 text-white" />
               </div>
@@ -112,9 +110,6 @@ export function Collaboration({ isOpen, onClose }: CollaborationProps) {
                 <p className="text-sm text-gray-500 dark:text-gray-400">Share search access & track team activity</p>
               </div>
             </div>
-            <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
-              <X className="w-5 h-5 text-gray-500" />
-            </button>
           </div>
         </div>
 
@@ -220,9 +215,7 @@ export function Collaboration({ isOpen, onClose }: CollaborationProps) {
             </div>
           )}
         </div>
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 

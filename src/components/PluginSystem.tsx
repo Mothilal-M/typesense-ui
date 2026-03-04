@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { createPortal } from "react-dom";
-import { X, Puzzle, Plus, Trash2, ToggleLeft, ToggleRight, Code, Upload, Play, AlertTriangle, Info } from "lucide-react";
+import { ArrowLeft, X, Puzzle, Plus, Trash2, ToggleLeft, ToggleRight, Code, Upload, Play, AlertTriangle, Info } from "lucide-react";
 import { useToast } from "../hooks/useToast";
 import type { PluginManifest } from "../types";
 
 const PLUGINS_KEY = "typesense-plugins";
 
 interface PluginSystemProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -62,7 +60,7 @@ return null;`,
   },
 ];
 
-export function PluginSystem({ isOpen, onClose }: PluginSystemProps) {
+export function PluginSystem({ onClose }: PluginSystemProps) {
   const { addToast } = useToast();
   const [plugins, setPlugins] = useState<PluginManifest[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -87,7 +85,7 @@ export function PluginSystem({ isOpen, onClose }: PluginSystemProps) {
     }
   }, []);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => { load(); }, []);
 
   const save = (updated: PluginManifest[]) => {
     setPlugins(updated);
@@ -149,15 +147,15 @@ export function PluginSystem({ isOpen, onClose }: PluginSystemProps) {
 
   const selected = plugins.find((p) => p.id === selectedId);
 
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 z-[9999] animate-fade-in" onClick={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+  return (
+    <div className="h-full flex flex-col bg-white dark:bg-slate-900">
         {/* Header */}
         <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-3">
+              <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/60 dark:hover:bg-slate-800 transition-colors" title="Back to dashboard">
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
               <div className="p-2 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg">
                 <Puzzle className="w-5 h-5 text-white" />
               </div>
@@ -170,9 +168,6 @@ export function PluginSystem({ isOpen, onClose }: PluginSystemProps) {
               <button onClick={() => { setShowAdd(!showAdd); setSelectedId(null); }} className="btn-primary text-sm flex items-center gap-1.5">
                 {showAdd ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
                 {showAdd ? "Cancel" : "New Plugin"}
-              </button>
-              <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
-                <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
           </div>
@@ -317,8 +312,6 @@ export function PluginSystem({ isOpen, onClose }: PluginSystemProps) {
             )}
           </div>
         </div>
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 }

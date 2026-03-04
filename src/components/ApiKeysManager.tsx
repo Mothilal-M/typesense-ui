@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { createPortal } from "react-dom";
-import { X, Plus, Trash2, Loader2, Key, Copy, Check, RefreshCw, Shield, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Loader2, Key, Copy, Check, RefreshCw, Shield, Eye, EyeOff } from "lucide-react";
 import type { ApiKeySchema } from "../types";
 import { typesenseService } from "../services/typesense";
 import { useApp } from "../context/AppContext";
 import { useToast } from "../hooks/useToast";
 
 interface ApiKeysManagerProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -46,7 +44,7 @@ const ACTION_PRESETS: Record<string, string[]> = {
   "Admin": ["*"],
 };
 
-export function ApiKeysManager({ isOpen, onClose }: ApiKeysManagerProps) {
+export function ApiKeysManager({ onClose }: ApiKeysManagerProps) {
   const { collections } = useApp();
   const { addToast } = useToast();
   const [keys, setKeys] = useState<ApiKeySchema[]>([]);
@@ -76,8 +74,8 @@ export function ApiKeysManager({ isOpen, onClose }: ApiKeysManagerProps) {
   }, [addToast]);
 
   useEffect(() => {
-    if (isOpen) { loadKeys(); setNewKeyValue(null); }
-  }, [isOpen, loadKeys]);
+    loadKeys(); setNewKeyValue(null);
+  }, []);
 
   const resetForm = () => {
     setFormDescription("");
@@ -155,15 +153,15 @@ export function ApiKeysManager({ isOpen, onClose }: ApiKeysManagerProps) {
     });
   };
 
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-[9999] animate-fade-in" onClick={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+  return (
+    <div className="h-full flex flex-col bg-white dark:bg-slate-900">
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+              <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/60 dark:hover:bg-slate-800 transition-colors" title="Back to dashboard">
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
               <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg">
                 <Key className="w-5 h-5 text-white" />
               </div>
@@ -175,9 +173,6 @@ export function ApiKeysManager({ isOpen, onClose }: ApiKeysManagerProps) {
             <div className="flex items-center gap-2">
               <button onClick={loadKeys} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
                 <RefreshCw className={`w-4 h-4 text-gray-500 ${isLoading ? "animate-spin" : ""}`} />
-              </button>
-              <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
-                <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
           </div>
@@ -332,8 +327,6 @@ export function ApiKeysManager({ isOpen, onClose }: ApiKeysManagerProps) {
             </div>
           )}
         </div>
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 }

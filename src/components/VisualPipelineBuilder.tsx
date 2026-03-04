@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef } from "react";
-import { createPortal } from "react-dom";
 import {
-  X, Plus, Trash2, Play, Loader2, Download, Upload, Wand2, Search,
+  ArrowLeft, Plus, Trash2, Play, Loader2, Download, Upload, Wand2, Search,
   ChevronUp, ChevronDown, GripVertical, CheckCircle, XCircle
 } from "lucide-react";
 import type { CollectionSchema, PipelineStep, PipelineStepType } from "../types";
@@ -10,7 +9,6 @@ import { useApp } from "../context/AppContext";
 import { useToast } from "../hooks/useToast";
 
 interface VisualPipelineBuilderProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -46,7 +44,7 @@ const STEP_COLORS: Record<PipelineStepType, string> = {
 
 let stepCounter = 1;
 
-export function VisualPipelineBuilder({ isOpen, onClose }: VisualPipelineBuilderProps) {
+export function VisualPipelineBuilder({ onClose }: VisualPipelineBuilderProps) {
   const { collections, refreshCollections } = useApp();
   const { addToast } = useToast();
   const [steps, setSteps] = useState<PipelineStep[]>([]);
@@ -172,15 +170,15 @@ export function VisualPipelineBuilder({ isOpen, onClose }: VisualPipelineBuilder
     addToast("success", `Loaded pipeline "${latest.name}"`);
   };
 
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 z-[9999] animate-fade-in" onClick={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+  return (
+    <div className="h-full flex flex-col bg-white dark:bg-slate-900">
         {/* Header */}
         <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-3">
+              <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/60 dark:hover:bg-slate-800 transition-colors" title="Back to dashboard">
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
               <div className="p-2 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 shadow-lg">
                 <Wand2 className="w-5 h-5 text-white" />
               </div>
@@ -197,9 +195,6 @@ export function VisualPipelineBuilder({ isOpen, onClose }: VisualPipelineBuilder
             <div className="flex items-center gap-2">
               <button onClick={loadPipeline} className="btn-secondary text-xs px-3 py-1.5">Load</button>
               <button onClick={savePipeline} className="btn-secondary text-xs px-3 py-1.5">Save</button>
-              <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
             </div>
           </div>
         </div>
@@ -287,9 +282,7 @@ export function VisualPipelineBuilder({ isOpen, onClose }: VisualPipelineBuilder
             </button>
           </div>
         )}
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 

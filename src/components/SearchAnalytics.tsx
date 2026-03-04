@@ -1,11 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { createPortal } from "react-dom";
-import { X, BarChart3, Trash2, TrendingUp, AlertCircle, Clock } from "lucide-react";
+import { ArrowLeft, BarChart3, Trash2, TrendingUp, AlertCircle, Clock } from "lucide-react";
 import type { AnalyticsEntry } from "../types";
 import { useToast } from "../hooks/useToast";
 
 interface SearchAnalyticsProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -33,15 +31,15 @@ function loadEntries(): AnalyticsEntry[] {
   } catch { return []; }
 }
 
-export function SearchAnalytics({ isOpen, onClose }: SearchAnalyticsProps) {
+export function SearchAnalytics({ onClose }: SearchAnalyticsProps) {
   const { addToast } = useToast();
   const [entries, setEntries] = useState<AnalyticsEntry[]>([]);
   const [tab, setTab] = useState<"top" | "zero" | "latency">("top");
   const [timeRange, setTimeRange] = useState<"1h" | "24h" | "7d" | "all">("24h");
 
   useEffect(() => {
-    if (isOpen) setEntries(loadEntries());
-  }, [isOpen]);
+    setEntries(loadEntries());
+  }, []);
 
   const filtered = useMemo(() => {
     const now = Date.now();
@@ -131,17 +129,17 @@ export function SearchAnalytics({ isOpen, onClose }: SearchAnalyticsProps) {
     addToast("info", "Analytics data cleared");
   }, [addToast]);
 
-  if (!isOpen) return null;
-
   const maxCount = Math.max(...latencyBuckets.map((b) => b.count), 1);
 
-  return createPortal(
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-[9999] animate-fade-in" onClick={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+  return (
+    <div className="h-full flex flex-col bg-white dark:bg-slate-900">
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+              <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/60 dark:hover:bg-slate-800 transition-colors" title="Back to dashboard">
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
               <div className="p-2 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 shadow-lg">
                 <BarChart3 className="w-5 h-5 text-white" />
               </div>
@@ -153,9 +151,6 @@ export function SearchAnalytics({ isOpen, onClose }: SearchAnalyticsProps) {
             <div className="flex items-center gap-2">
               <button onClick={handleClear} className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors text-gray-400 hover:text-red-500" title="Clear all analytics">
                 <Trash2 className="w-4 h-4" />
-              </button>
-              <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
-                <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
           </div>
@@ -250,9 +245,7 @@ export function SearchAnalytics({ isOpen, onClose }: SearchAnalyticsProps) {
             </div>
           )}
         </div>
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 

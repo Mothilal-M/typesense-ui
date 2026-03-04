@@ -1,12 +1,10 @@
 import { useState, useCallback } from "react";
-import { createPortal } from "react-dom";
-import { X, Sparkles, Copy, Check, Loader2, Wand2, FileJson } from "lucide-react";
+import { ArrowLeft, Sparkles, Copy, Check, Loader2, Wand2, FileJson, X } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { useToast } from "../hooks/useToast";
 import { typesenseService } from "../services/typesense";
 
 interface AiSchemaGeneratorProps {
-  isOpen: boolean;
   onClose: () => void;
   onCreated?: () => void;
 }
@@ -112,7 +110,7 @@ Respond ONLY with valid JSON matching this TypeScript interface:
   return JSON.parse(jsonMatch[0]) as GeneratedSchema;
 }
 
-export function AiSchemaGenerator({ isOpen, onClose, onCreated }: AiSchemaGeneratorProps) {
+export function AiSchemaGenerator({ onClose, onCreated }: AiSchemaGeneratorProps) {
   const { geminiApiKey, refreshCollections } = useApp();
   const { addToast } = useToast();
   const [jsonInput, setJsonInput] = useState("");
@@ -223,15 +221,15 @@ export function AiSchemaGenerator({ isOpen, onClose, onCreated }: AiSchemaGenera
     });
   };
 
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-[9999] animate-fade-in" onClick={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+  return (
+    <div className="h-full flex flex-col bg-white dark:bg-slate-900">
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-purple-50 via-blue-50 to-pink-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-pink-900/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+              <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/60 dark:hover:bg-slate-800 transition-colors" title="Back to dashboard">
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
               <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
                 <Wand2 className="w-5 h-5 text-white" />
               </div>
@@ -240,9 +238,6 @@ export function AiSchemaGenerator({ isOpen, onClose, onCreated }: AiSchemaGenera
                 <p className="text-sm text-gray-500 dark:text-gray-400">Paste sample JSON → Get optimized Typesense schema</p>
               </div>
             </div>
-            <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
-              <X className="w-5 h-5 text-gray-500" />
-            </button>
           </div>
         </div>
 
@@ -431,8 +426,6 @@ export function AiSchemaGenerator({ isOpen, onClose, onCreated }: AiSchemaGenera
             </button>
           </div>
         )}
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 }

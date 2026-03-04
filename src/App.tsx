@@ -46,32 +46,27 @@ function LoadingFallback() {
   );
 }
 
+type ActiveView = "server-status" | "analytics" | "api-keys" | "ai-schema" | "pipeline" | "migration" | "collaboration" | "plugins" | null;
+
 function DashboardContent() {
   const { isConnected, config, setConfig, refreshCollections } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [profileManagerOpen, setProfileManagerOpen] = useState(false);
 
-  // Global feature modals
-  const [showApiKeys, setShowApiKeys] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
-  const [showAiSchema, setShowAiSchema] = useState(false);
-  const [showPipeline, setShowPipeline] = useState(false);
-  const [showMigration, setShowMigration] = useState(false);
-  const [showCollaboration, setShowCollaboration] = useState(false);
-  const [showPlugins, setShowPlugins] = useState(false);
-  const [showServerStatus, setShowServerStatus] = useState(false);
+  // Full-page feature views
+  const [activeView, setActiveView] = useState<ActiveView>(null);
 
   // Extra commands for the command palette
   const extraCommands = useMemo<CommandItem[]>(() => [
-    { id: "api-keys", label: "API Keys Manager", description: "Create and manage scoped API keys", icon: <Key className="w-4 h-4" />, category: "action", action: () => { setShowApiKeys(true); setCommandPaletteOpen(false); }, keywords: ["api", "keys", "auth", "token"] },
-    { id: "analytics", label: "Search Analytics", description: "View search analytics dashboard", icon: <BarChart3 className="w-4 h-4" />, category: "action", action: () => { setShowAnalytics(true); setCommandPaletteOpen(false); }, keywords: ["analytics", "stats", "metrics", "dashboard"] },
-    { id: "ai-schema", label: "AI Schema Generator", description: "Generate schemas from sample data using AI", icon: <Wand2 className="w-4 h-4" />, category: "action", action: () => { setShowAiSchema(true); setCommandPaletteOpen(false); }, keywords: ["ai", "schema", "generate", "create"] },
-    { id: "pipeline", label: "Visual Pipeline Builder", description: "Build import/transform/search workflows", icon: <Workflow className="w-4 h-4" />, category: "action", action: () => { setShowPipeline(true); setCommandPaletteOpen(false); }, keywords: ["pipeline", "workflow", "import", "transform"] },
-    { id: "migration", label: "Schema Migration Tool", description: "Compare and migrate schemas across servers", icon: <GitCompare className="w-4 h-4" />, category: "action", action: () => { setShowMigration(true); setCommandPaletteOpen(false); }, keywords: ["migration", "schema", "diff", "compare", "remote"] },
-    { id: "collaboration", label: "Collaboration", description: "Share links and view audit log", icon: <Share2 className="w-4 h-4" />, category: "action", action: () => { setShowCollaboration(true); setCommandPaletteOpen(false); }, keywords: ["share", "collaborate", "audit", "link", "team"] },
-    { id: "plugins", label: "Plugin System", description: "Manage and create custom plugins", icon: <Puzzle className="w-4 h-4" />, category: "action", action: () => { setShowPlugins(true); setCommandPaletteOpen(false); }, keywords: ["plugin", "extension", "hook", "custom"] },
-    { id: "server-status", label: "Server Status", description: "View server metrics, CPU, memory, disk usage", icon: <Activity className="w-4 h-4" />, category: "action", action: () => { setShowServerStatus(true); setCommandPaletteOpen(false); }, keywords: ["server", "status", "metrics", "cpu", "memory", "disk", "health", "monitor", "cache"] },
+    { id: "api-keys", label: "API Keys Manager", description: "Create and manage scoped API keys", icon: <Key className="w-4 h-4" />, category: "action", action: () => { setActiveView("api-keys"); setCommandPaletteOpen(false); }, keywords: ["api", "keys", "auth", "token"] },
+    { id: "analytics", label: "Search Analytics", description: "View search analytics dashboard", icon: <BarChart3 className="w-4 h-4" />, category: "action", action: () => { setActiveView("analytics"); setCommandPaletteOpen(false); }, keywords: ["analytics", "stats", "metrics", "dashboard"] },
+    { id: "ai-schema", label: "AI Schema Generator", description: "Generate schemas from sample data using AI", icon: <Wand2 className="w-4 h-4" />, category: "action", action: () => { setActiveView("ai-schema"); setCommandPaletteOpen(false); }, keywords: ["ai", "schema", "generate", "create"] },
+    { id: "pipeline", label: "Visual Pipeline Builder", description: "Build import/transform/search workflows", icon: <Workflow className="w-4 h-4" />, category: "action", action: () => { setActiveView("pipeline"); setCommandPaletteOpen(false); }, keywords: ["pipeline", "workflow", "import", "transform"] },
+    { id: "migration", label: "Schema Migration Tool", description: "Compare and migrate schemas across servers", icon: <GitCompare className="w-4 h-4" />, category: "action", action: () => { setActiveView("migration"); setCommandPaletteOpen(false); }, keywords: ["migration", "schema", "diff", "compare", "remote"] },
+    { id: "collaboration", label: "Collaboration", description: "Share links and view audit log", icon: <Share2 className="w-4 h-4" />, category: "action", action: () => { setActiveView("collaboration"); setCommandPaletteOpen(false); }, keywords: ["share", "collaborate", "audit", "link", "team"] },
+    { id: "plugins", label: "Plugin System", description: "Manage and create custom plugins", icon: <Puzzle className="w-4 h-4" />, category: "action", action: () => { setActiveView("plugins"); setCommandPaletteOpen(false); }, keywords: ["plugin", "extension", "hook", "custom"] },
+    { id: "server-status", label: "Server Status", description: "View server metrics, CPU, memory, disk usage", icon: <Activity className="w-4 h-4" />, category: "action", action: () => { setActiveView("server-status"); setCommandPaletteOpen(false); }, keywords: ["server", "status", "metrics", "cpu", "memory", "disk", "health", "monitor", "cache"] },
   ], []);
 
   // Keyboard shortcuts (only when connected)
@@ -96,43 +91,57 @@ function DashboardContent() {
         onToggleSidebar={() => setSidebarOpen((v) => !v)}
         sidebarOpen={sidebarOpen}
         onManageProfiles={() => setProfileManagerOpen(true)}
-        onServerStatus={() => setShowServerStatus(true)}
+        onServerStatus={() => setActiveView("server-status")}
       />
-      <div className="flex-1 flex overflow-hidden relative">
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/40 z-30 md:hidden animate-fade-in"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        <aside
-          className={`
-            fixed inset-y-0 left-0 z-40 w-72 sm:w-80 border-r border-gray-200/50 dark:border-slate-700/50
-            bg-white dark:bg-slate-900 shadow-xl
-            transform transition-transform duration-300 ease-in-out
-            md:relative md:translate-x-0 md:z-auto
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          `}
-          style={{ top: 0 }}
-        >
-          <div className="md:hidden absolute top-3 right-3 z-50">
-            <button
+      {/* Full-page feature views replace sidebar+main when active */}
+      {activeView ? (
+        <div className="flex-1 overflow-hidden">
+          {activeView === "server-status" && <ServerStatus onClose={() => setActiveView(null)} />}
+          {activeView === "analytics" && <SearchAnalytics onClose={() => setActiveView(null)} />}
+          {activeView === "api-keys" && <ApiKeysManager onClose={() => setActiveView(null)} />}
+          {activeView === "ai-schema" && <AiSchemaGenerator onClose={() => setActiveView(null)} />}
+          {activeView === "pipeline" && <VisualPipelineBuilder onClose={() => setActiveView(null)} />}
+          {activeView === "migration" && <SchemaMigrationTool onClose={() => setActiveView(null)} />}
+          {activeView === "collaboration" && <Collaboration onClose={() => setActiveView(null)} />}
+          {activeView === "plugins" && <PluginSystem onClose={() => setActiveView(null)} />}
+        </div>
+      ) : (
+        <div className="flex-1 flex overflow-hidden relative">
+          {sidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black/40 z-30 md:hidden animate-fade-in"
               onClick={() => setSidebarOpen(false)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-            >
-              <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <CollectionsList onCollectionSelect={() => setSidebarOpen(false)} />
-        </aside>
+            />
+          )}
 
-        <main className="flex-1 overflow-hidden">
-          <CollectionViewer />
-        </main>
-      </div>
+          <aside
+            className={`
+              fixed inset-y-0 left-0 z-40 w-72 sm:w-80 border-r border-gray-200/50 dark:border-slate-700/50
+              bg-white dark:bg-slate-900 shadow-xl
+              transform transition-transform duration-300 ease-in-out
+              md:relative md:translate-x-0 md:z-auto
+              ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+            `}
+            style={{ top: 0 }}
+          >
+            <div className="md:hidden absolute top-3 right-3 z-50">
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <CollectionsList onCollectionSelect={() => setSidebarOpen(false)} />
+          </aside>
+
+          <main className="flex-1 overflow-hidden">
+            <CollectionViewer />
+          </main>
+        </div>
+      )}
 
       {/* Command Palette */}
       <CommandPalette
@@ -148,16 +157,6 @@ function DashboardContent() {
         onConnect={setConfig}
         currentConfig={config}
       />
-
-      {/* Global Feature Modals */}
-      <ApiKeysManager isOpen={showApiKeys} onClose={() => setShowApiKeys(false)} />
-      <SearchAnalytics isOpen={showAnalytics} onClose={() => setShowAnalytics(false)} />
-      <AiSchemaGenerator isOpen={showAiSchema} onClose={() => setShowAiSchema(false)} />
-      <VisualPipelineBuilder isOpen={showPipeline} onClose={() => setShowPipeline(false)} />
-      <SchemaMigrationTool isOpen={showMigration} onClose={() => setShowMigration(false)} />
-      <Collaboration isOpen={showCollaboration} onClose={() => setShowCollaboration(false)} />
-      <PluginSystem isOpen={showPlugins} onClose={() => setShowPlugins(false)} />
-      <ServerStatus isOpen={showServerStatus} onClose={() => setShowServerStatus(false)} />
     </div>
   );
 }
