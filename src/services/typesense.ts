@@ -374,6 +374,41 @@ class TypesenseService {
       throw error;
     }
   }
+
+  // ─── Server Status ──────────────────────────────────────────────
+
+  async getMetrics(): Promise<Record<string, string>> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.metrics.retrieve();
+      return res as unknown as Record<string, string>;
+    } catch (error) {
+      console.error("Error fetching metrics:", error);
+      throw error;
+    }
+  }
+
+  async getDebugInfo(): Promise<{ state: number; version: string }> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.debug.retrieve();
+      return res as { state: number; version: string };
+    } catch (error) {
+      console.error("Error fetching debug info:", error);
+      throw error;
+    }
+  }
+
+  async clearCache(): Promise<any> {
+    if (!this.client) throw new Error("Client not initialized");
+    try {
+      const res = await this.client.operations.perform("cache/clear");
+      return res;
+    } catch (error) {
+      console.error("Error clearing cache:", error);
+      throw error;
+    }
+  }
 }
 
 export const typesenseService = new TypesenseService();

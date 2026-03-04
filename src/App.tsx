@@ -19,6 +19,7 @@ import { VisualPipelineBuilder } from "./components/VisualPipelineBuilder";
 import { SchemaMigrationTool } from "./components/SchemaMigrationTool";
 import { Collaboration } from "./components/Collaboration";
 import { PluginSystem } from "./components/PluginSystem";
+import { ServerStatus } from "./components/ServerStatus";
 import {
   Key,
   BarChart3,
@@ -27,6 +28,7 @@ import {
   GitCompare,
   Share2,
   Puzzle,
+  Activity,
 } from "lucide-react";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
@@ -58,6 +60,7 @@ function DashboardContent() {
   const [showMigration, setShowMigration] = useState(false);
   const [showCollaboration, setShowCollaboration] = useState(false);
   const [showPlugins, setShowPlugins] = useState(false);
+  const [showServerStatus, setShowServerStatus] = useState(false);
 
   // Extra commands for the command palette
   const extraCommands = useMemo<CommandItem[]>(() => [
@@ -68,6 +71,7 @@ function DashboardContent() {
     { id: "migration", label: "Schema Migration Tool", description: "Compare and migrate schemas across servers", icon: <GitCompare className="w-4 h-4" />, category: "action", action: () => { setShowMigration(true); setCommandPaletteOpen(false); }, keywords: ["migration", "schema", "diff", "compare", "remote"] },
     { id: "collaboration", label: "Collaboration", description: "Share links and view audit log", icon: <Share2 className="w-4 h-4" />, category: "action", action: () => { setShowCollaboration(true); setCommandPaletteOpen(false); }, keywords: ["share", "collaborate", "audit", "link", "team"] },
     { id: "plugins", label: "Plugin System", description: "Manage and create custom plugins", icon: <Puzzle className="w-4 h-4" />, category: "action", action: () => { setShowPlugins(true); setCommandPaletteOpen(false); }, keywords: ["plugin", "extension", "hook", "custom"] },
+    { id: "server-status", label: "Server Status", description: "View server metrics, CPU, memory, disk usage", icon: <Activity className="w-4 h-4" />, category: "action", action: () => { setShowServerStatus(true); setCommandPaletteOpen(false); }, keywords: ["server", "status", "metrics", "cpu", "memory", "disk", "health", "monitor", "cache"] },
   ], []);
 
   // Keyboard shortcuts (only when connected)
@@ -92,6 +96,7 @@ function DashboardContent() {
         onToggleSidebar={() => setSidebarOpen((v) => !v)}
         sidebarOpen={sidebarOpen}
         onManageProfiles={() => setProfileManagerOpen(true)}
+        onServerStatus={() => setShowServerStatus(true)}
       />
       <div className="flex-1 flex overflow-hidden relative">
         {sidebarOpen && (
@@ -152,6 +157,7 @@ function DashboardContent() {
       <SchemaMigrationTool isOpen={showMigration} onClose={() => setShowMigration(false)} />
       <Collaboration isOpen={showCollaboration} onClose={() => setShowCollaboration(false)} />
       <PluginSystem isOpen={showPlugins} onClose={() => setShowPlugins(false)} />
+      <ServerStatus isOpen={showServerStatus} onClose={() => setShowServerStatus(false)} />
     </div>
   );
 }

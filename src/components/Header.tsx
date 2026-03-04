@@ -1,4 +1,4 @@
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, X, Activity } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { ThemeToggle } from "./ui/ThemeToggle";
 import { Logo } from "./ui/Logo";
@@ -10,9 +10,10 @@ interface HeaderProps {
   onToggleSidebar: () => void;
   sidebarOpen: boolean;
   onManageProfiles?: () => void;
+  onServerStatus?: () => void;
 }
 
-export function Header({ onToggleSidebar, sidebarOpen, onManageProfiles }: HeaderProps) {
+export function Header({ onToggleSidebar, sidebarOpen, onManageProfiles, onServerStatus }: HeaderProps) {
   const {
     config,
     disconnect,
@@ -73,6 +74,17 @@ export function Header({ onToggleSidebar, sidebarOpen, onManageProfiles }: Heade
           </div>
 
           <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+            <button
+              onClick={onServerStatus}
+              className="flex items-center space-x-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 border border-transparent hover:border-blue-200 dark:hover:border-blue-800/50"
+              title="Server Status"
+            >
+              <Activity className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm font-medium">
+                Server Status
+              </span>
+            </button>
+
             <ThemeToggle isDark={theme === "dark"} onToggle={toggleTheme} />
 
             <button

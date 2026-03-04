@@ -148,6 +148,33 @@ export interface SharedLink {
   expiresAt?: string;
 }
 
+// ─── Server Metrics ────────────────────────────────────────────
+export interface ParsedMetrics {
+  cpu: { overall: number; cores: number[] };
+  memory: { totalBytes: number; usedBytes: number; usedPercent: number };
+  disk: { totalBytes: number; usedBytes: number; usedPercent: number };
+  network: { receivedBytes: number; sentBytes: number };
+  typesenseMemory: {
+    activeBytes: number;
+    allocatedBytes: number;
+    fragmentationRatio: number;
+    mappedBytes: number;
+    metadataBytes: number;
+    residentBytes: number;
+    retainedBytes: number;
+  };
+}
+
+export interface MetricsSnapshot {
+  timestamp: number;
+  metrics: ParsedMetrics;
+}
+
+export interface ServerDebugInfo {
+  state: number;
+  version: string;
+}
+
 // ─── Plugin System ──────────────────────────────────────────────
 export interface PluginManifest {
   id: string;
